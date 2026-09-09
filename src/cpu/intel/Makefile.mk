@@ -14,6 +14,7 @@ subdirs-$(CONFIG_CPU_INTEL_SOCKET_M) += socket_m
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_P) += socket_p
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_MPGA604) += socket_mPGA604
 subdirs-$(CONFIG_CPU_INTEL_MODEL_2065X) += model_2065x
+subdirs-$(CONFIG_CPU_INTEL_MODEL_206CX) += model_206cx
 subdirs-$(CONFIG_CPU_INTEL_MODEL_206AX) += model_206ax
 subdirs-$(CONFIG_CPU_INTEL_HASWELL) += haswell
 subdirs-$(CONFIG_CPU_INTEL_SLOT_1) += slot_1

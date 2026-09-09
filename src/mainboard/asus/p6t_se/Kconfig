@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_ASUS_P6T_SE
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select NORTHBRIDGE_INTEL_X58
+	select SOUTHBRIDGE_INTEL_I82801JX
+	select SUPERIO_WINBOND_W83667HG_A
+	select BOARD_ROMSIZE_KB_2048
+
+config MAINBOARD_DIR
+	default "asus/p6t_se"
+
+config MAINBOARD_PART_NUMBER
+	default "P6T SE"
+
+endif

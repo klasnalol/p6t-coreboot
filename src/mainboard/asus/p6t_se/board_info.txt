@@ -1,0 +1,5 @@
+Category: desktop
+Board URL: https://www.asus.com/supportonly/p6t%20se/helpdesk_bios/
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/x58
+	device cpu_cluster 0 on
+		ops x58_cpu_bus_ops
+	end
+	device domain 0 on
+		ops x58_pci_domain_ops
+		device pci 0.0 on end		# X58 ESI/host bridge
+
+		chip southbridge/intel/i82801jx
+			register "sata_port_map" = "0x3f"
+
+			device pci 1a.0 on end		# USB UHCI #4
+			device pci 1a.1 on end		# USB UHCI #5
+			device pci 1a.2 on end		# USB UHCI #6
+			device pci 1a.7 on end		# USB EHCI #2
+			device pci 1b.0 on end		# HDA
+			device pci 1c.0 on end		# PCIe root port 1
+			device pci 1c.2 on end		# PCIe root port 3
+			device pci 1c.3 on end		# PCIe root port 4
+			device pci 1c.4 on end		# PCIe root port 5
+			device pci 1d.0 on end		# USB UHCI #1
+			device pci 1d.1 on end		# USB UHCI #2
+			device pci 1d.2 on end		# USB UHCI #3
+			device pci 1d.7 on end		# USB EHCI #1
+			device pci 1e.0 on end		# PCI bridge
+			device pci 1f.0 on		# LPC
+				chip superio/winbond/w83667hg-a
+					device pnp 2e.2 on	# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on	# COM2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+				end
+			end
+			device pci 1f.2 on end		# SATA
+			device pci 1f.3 on end		# SMBus
+			device pci 1f.5 on end		# Secondary SATA/IDE function
+		end
+	end
+end
