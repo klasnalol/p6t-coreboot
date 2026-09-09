@@ -1,3 +1,4 @@
+ramstage-y += model_206cx_init.c
 # SPDX-License-Identifier: GPL-2.0-only
 
 subdirs-y += ../../x86/name

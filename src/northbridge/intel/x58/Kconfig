@@ -22,4 +22,19 @@ config ECAM_MMCONF_BUS_NUMBER
 config DOMAIN_RESOURCE_32BIT_LIMIT
 	default 0xfec00000
 
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfefc0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
+	help
+	  Initial CAR stack size for X58/Westmere-EP bring-up.
+
 endif

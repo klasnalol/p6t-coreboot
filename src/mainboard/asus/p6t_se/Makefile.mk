@@ -2,3 +2,4 @@
 
 bootblock-y += early_init.c
 romstage-y += early_init.c
+ramstage-y += hda_verb.c

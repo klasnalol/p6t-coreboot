@@ -3,6 +3,7 @@
 #include <bootblock_common.h>
 #include <post.h>
 #include <types.h>
+#include <northbridge/intel/x58/x58.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83667hg-a/w83667hg-a.h>
 

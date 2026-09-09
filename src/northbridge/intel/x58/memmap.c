@@ -3,6 +3,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/romstage.h>
+#include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <types.h>
 
