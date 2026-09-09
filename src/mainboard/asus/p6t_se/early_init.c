@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include "beep.h"
+
 #include <bootblock_common.h>
 #include <post.h>
 #include <types.h>
@@ -12,8 +14,10 @@
 void bootblock_mainboard_early_init(void)
 {
 	post_code(0xa0);
+	p6t_se_beep(1);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	post_code(0xa1);
+	p6t_se_beep(2);
 }
 
 /* Stock P6T SE exposes six DDR3 SPD EEPROMs at 0x50..0x55. */
