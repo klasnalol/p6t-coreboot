@@ -10,13 +10,13 @@
 void mainboard_romstage_entry(void)
 {
 	post_code(0xe0);
-	p6t_se_beep(3);
+	p6t_se_beep(8);
 
 	printk(BIOS_EMERG,
 	       "P6T SE/X58: reached romstage with CAR alive\n");
 
 	post_code(0xe1);
-	p6t_se_beep(4);
+	p6t_se_beep(9);
 
 	die("P6T SE/X58: DRAM initialization is not implemented yet\n");
 }

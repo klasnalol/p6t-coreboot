@@ -16,8 +16,17 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+#if ENV_BOOTBLOCK && CONFIG(BOARD_ASUS_P6T_SE)
+/* Temporary P6T SE bring-up instrumentation. */
+void p6t_se_beep(unsigned int count);
+#define P6TSE_BEEP(count) p6t_se_beep(count)
+#else
+#define P6TSE_BEEP(count) do { } while (0)
+#endif
+
 void run_romstage(void)
 {
+	P6TSE_BEEP(4);
 	if (!CONFIG(SEPARATE_ROMSTAGE)) {
 		/* Call romstage instead of loading it as a cbfs file. */
 		timestamp_add_now(TS_ROMSTAGE_START);
@@ -30,6 +39,7 @@ void run_romstage(void)
 		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
 
 	vboot_run_logic();
+	P6TSE_BEEP(5);
 
 	timestamp_add_now(TS_COPYROM_START);
 
@@ -41,9 +51,11 @@ void run_romstage(void)
 			goto fail;
 	}
 
+	P6TSE_BEEP(6);
 	timestamp_add_now(TS_COPYROM_END);
 
 	console_time_report();
+	P6TSE_BEEP(7);
 
 	prog_run(&romstage);
 

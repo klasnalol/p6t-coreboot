@@ -20,6 +20,13 @@ void bootblock_mainboard_early_init(void)
 	p6t_se_beep(2);
 }
 
+
+void bootblock_mainboard_init(void)
+{
+	post_code(0xa2);
+	p6t_se_beep(3);
+}
+
 /* Stock P6T SE exposes six DDR3 SPD EEPROMs at 0x50..0x55. */
 void mb_get_spd_map(u8 spd_map[6])
 {
