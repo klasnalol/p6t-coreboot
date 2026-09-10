@@ -12,6 +12,14 @@
 #include <security/vboot/vboot_common.h>
 #include <types.h>
 
+#if CONFIG(BOARD_ASUS_P6T_SE)
+/* Temporary P6T SE romstage-entry diagnostic. */
+void p6t_se_beep(unsigned int count);
+#define P6TSE_ROMSTART_BEEP() p6t_se_beep(1)
+#else
+#define P6TSE_ROMSTART_BEEP() do { } while (0)
+#endif
+
 /* If we do not have a constrained _car_stack region size, use the
    following as a guideline for acceptable stack usage. */
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
@@ -31,6 +39,7 @@ __weak void platform_romstage_post_mem(void) { /* no-op */ }
 
 void __noreturn romstage_main(void)
 {
+	P6TSE_ROMSTART_BEEP();
 	int i;
 	const int num_guards = 64;
 	const u32 stack_guard = 0xdeadbeef;
