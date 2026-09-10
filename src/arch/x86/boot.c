@@ -8,6 +8,14 @@
 #include <symbols.h>
 #include <assert.h>
 
+#if ENV_BOOTBLOCK && CONFIG(BOARD_ASUS_P6T_SE)
+/* Temporary P6T SE program-jump diagnostics. */
+void p6t_se_beep(unsigned int count);
+#define P6TSE_ARCH_BEEP(count) p6t_se_beep(count)
+#else
+#define P6TSE_ARCH_BEEP(count) do { } while (0)
+#endif
+
 int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 {
 	if (start < 1 * MiB && (start + size) <= 1 * MiB) {
@@ -35,6 +43,32 @@ void arch_prog_run(struct prog *prog)
 	asmlinkage void (*doit)(void *arg);
 #endif
 	doit = prog_entry(prog);
+
+#if ENV_BOOTBLOCK && CONFIG(BOARD_ASUS_P6T_SE)
+	/*
+	 * 1 beep: reached arch_prog_run(), entry pointer has been obtained.
+	 * Exact address is also emitted on COM1.
+	 */
+	P6TSE_ARCH_BEEP(1);
+
+	printk(BIOS_EMERG,
+	       "P6TSE: arch_prog_run entry=%p arg=%p\\n",
+	       prog_entry(prog), prog_entry_arg(prog));
+
+	/*
+	 * 2 beeps: printk returned; next operation is the indirect call.
+	 */
+	P6TSE_ARCH_BEEP(2);
+#endif
+
 	doit(prog_entry_arg(prog));
+
+#if ENV_BOOTBLOCK && CONFIG(BOARD_ASUS_P6T_SE)
+	/*
+	 * 3 beeps: target unexpectedly returned.
+	 * A normal romstage transfer should never produce this.
+	 */
+	P6TSE_ARCH_BEEP(3);
+#endif
 #endif
 }
