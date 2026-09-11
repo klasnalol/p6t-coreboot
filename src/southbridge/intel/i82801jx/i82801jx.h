@@ -8,9 +8,9 @@
 #include <southbridge/intel/common/lpc_def.h> /* IWYU pragma: export */
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
-#define DEFAULT_PMBASE		0x00000500
+#define DEFAULT_PMBASE		0x00000800
 #define DEFAULT_TCOBASE		(DEFAULT_PMBASE + 0x60)
-#define DEFAULT_GPIOBASE	0x00000580
+#define DEFAULT_GPIOBASE	0x00000500
 
 #define GP_IO_USE_SEL	0x00
 #define GP_IO_SEL	0x04

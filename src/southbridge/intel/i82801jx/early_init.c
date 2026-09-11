@@ -59,7 +59,7 @@ void i82801jx_setup_bars(void)
 	pci_write_config8(d31f0, D31F0_ACPI_CNTL, 0x80);
 
 	/* Set up GPIOBASE. */
-	pci_write_config32(d31f0, GPIOBASE, DEFAULT_GPIOBASE);
+	pci_write_config32(d31f0, GPIOBASE, DEFAULT_GPIOBASE | 1);
 	/* Enable GPIO. */
 	pci_or_config8(d31f0, D31F0_GPIO_CNTL, 0x10);
 }
