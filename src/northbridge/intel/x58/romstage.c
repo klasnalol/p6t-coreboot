@@ -10,6 +10,7 @@
 #include <types.h>
 
 #include "../../../mainboard/asus/p6t_se/beep.h"
+#include "minit_internal.h"
 
 #define SPD_ADDR		0x50
 #define SPD_TEST_BYTES		16
@@ -163,6 +164,83 @@ static void p6t_se_select_spd_50(void)
 	       inw(P6T_GPIOBASE + GP_LVL2));
 }
 
+static void p6t_se_private_imc_probe(void)
+{
+	const u8 bus = 0xff;
+	const pci_devfn_t test = PCI_DEV(0xff, 3, 4);
+	const struct x58_minit_field_desc *d;
+	u16 idx;
+	u32 id;
+	u32 value;
+
+	id = pci_read_config32(test, 0x00);
+	printk(BIOS_EMERG, "P6T SE/X58: ff:03.4 ID=%08x\n", id);
+	if (id != 0x2d9c8086) {
+		post_code(0xf6);
+		p6t_se_beep(1);
+		die("P6T SE/X58: Westmere IMC test device not visible\n");
+	}
+
+	post_code(0xe6);
+	p6t_se_beep(6);
+
+	/* Exact MINIT mapping: ctx+0xb6 -> global descriptor 0x15. */
+	idx = x58_minit_cfg_index(0x0b6);
+	d = x58_minit_global_desc(idx);
+	if (idx != 0x15 || !d || !x58_minit_read_global(bus, idx, &value)) {
+		post_code(0xf7);
+		p6t_se_beep(2);
+		die("P6T SE/X58: global private IMC read failed\n");
+	}
+	printk(BIOS_EMERG,
+	       "P6T SE/X58: G ctx+b6 idx=%03x bit=%04x span=%u value=%08x\n",
+	       idx, d->bit, d->span, value);
+
+	/* ctx+0xbc -> global descriptor 0x14. */
+	idx = x58_minit_cfg_index(0x0bc);
+	d = x58_minit_global_desc(idx);
+	if (idx != 0x14 || !d || !x58_minit_read_global(bus, idx, &value)) {
+		post_code(0xf7);
+		p6t_se_beep(2);
+		die("P6T SE/X58: second global private IMC read failed\n");
+	}
+	printk(BIOS_EMERG,
+	       "P6T SE/X58: G ctx+bc idx=%03x bit=%04x span=%u value=%08x\n",
+	       idx, d->bit, d->span, value);
+
+	/* ctx+0xd0 -> global descriptor 0x18 (signed-offset path). */
+	idx = x58_minit_cfg_index(0x0d0);
+	d = x58_minit_global_desc(idx);
+	if (idx != 0x18 || !d || !x58_minit_read_global(bus, idx, &value)) {
+		post_code(0xf7);
+		p6t_se_beep(2);
+		die("P6T SE/X58: signed-offset private IMC read failed\n");
+	}
+	printk(BIOS_EMERG,
+	       "P6T SE/X58: G ctx+d0 idx=%03x bit=%04x span=%u value=%08x\n",
+	       idx, d->bit, d->span, value);
+
+	post_code(0xe7);
+	p6t_se_beep(7);
+
+	/* ctx+0x11e is the first B8 nine-field channel descriptor: 0x239. */
+	idx = x58_minit_cfg_index(0x11e);
+	d = x58_minit_channel_desc(idx);
+	if (idx != 0x239 || !d || !x58_minit_read_channel(bus, 0, idx, &value)) {
+		post_code(0xf8);
+		p6t_se_beep(3);
+		die("P6T SE/X58: channel private IMC read failed\n");
+	}
+	printk(BIOS_EMERG,
+	       "P6T SE/X58: CH0 ctx+11e idx=%03x bit=%04x span=%u value=%08x\n",
+	       idx, d->bit, d->span, value);
+
+	post_code(0xe8);
+	p6t_se_beep(8);
+	printk(BIOS_EMERG,
+	       "P6T SE/X58: MINIT private-IMC descriptor/transport milestone passed\n");
+}
+
 void mainboard_romstage_entry(void)
 {
 	u8 spd[SPD_TEST_BYTES];
@@ -285,5 +363,7 @@ void mainboard_romstage_entry(void)
 	printk(BIOS_EMERG,
 	       "P6T SE/X58: STOCK-DERIVED SPD TEST PASSED\n");
 
-	die("P6T SE/X58: SPD milestone reached\n");
+	p6t_se_private_imc_probe();
+
+	die("P6T SE/X58: private IMC milestone reached\n");
 }
