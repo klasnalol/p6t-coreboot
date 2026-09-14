@@ -9,6 +9,7 @@ romstage-y += romstage.c
 
 ramstage-y += memmap.c
 ramstage-y += northbridge.c
+ramstage-y += pcie.c
 
 postcar-y += memmap.c
 

@@ -4,6 +4,8 @@
 #include <arch/romstage.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/dram/ddr3.h>
 #include <device/smbus_host.h>
@@ -22,6 +24,95 @@
 #define SPD_TYPE_BYTE		2
 #define SPD_TYPE_DDR3		0x0b
 #define SPD_READ_RETRIES	20
+
+#define X58_PCIE_LINK_CAP	0x9c
+#define  X58_PCIE_LINK_CAP_L1_EXIT_MASK	0x00038000
+#define  X58_PCIE_LINK_CAP_L1_EXIT_32_TO_64_US	(6 << 15)
+#define  X58_PCIE_LINK_CAP_WIDTH_MASK	0x000003f0
+#define  X58_PCIE_LINK_CAP_WIDTH_SHIFT	4
+#define X58_PCIE_LINK_STATUS	0xa2
+#define  X58_PCIE_LINK_SPEED_MASK	0x000f
+#define  X58_PCIE_LINK_WIDTH_MASK	0x03f0
+#define  X58_PCIE_LINK_WIDTH_SHIFT	4
+#define  X58_PCIE_DLL_ACTIVE	BIT(13)
+#define X58_PCIE_IOU_BIF_CTRL	0x190
+
+struct x58_pcie_port {
+	u8 device;
+	u16 device_id;
+	u8 iou;
+	u8 max_width;
+};
+
+static const struct x58_pcie_port p6t_se_pcie_ports[] = {
+	/* IOU2 is the board's third mechanical x16 slot, wired as x4. */
+	{ 1, 0x3408, 2, 4 },
+	/* IOU0 and IOU1 are the two full-width graphics slots. */
+	{ 3, 0x340a, 0, 16 },
+	{ 7, 0x340e, 1, 16 },
+};
+
+static bool p6t_se_program_x58_link_cap(pci_devfn_t dev,
+					unsigned int max_width)
+{
+	const u32 mask = X58_PCIE_LINK_CAP_L1_EXIT_MASK |
+		X58_PCIE_LINK_CAP_WIDTH_MASK;
+	const u32 value = X58_PCIE_LINK_CAP_L1_EXIT_32_TO_64_US |
+		(max_width << X58_PCIE_LINK_CAP_WIDTH_SHIFT);
+	u32 link_cap = pci_read_config32(dev, X58_PCIE_LINK_CAP);
+
+	/*
+	 * These LNKCAP fields are write-once. The vendor POST programs 00:00.0
+	 * and the three lead root ports together, before PCI enumeration.
+	 */
+	link_cap = (link_cap & ~mask) | value;
+	pci_write_config32(dev, X58_PCIE_LINK_CAP, link_cap);
+	link_cap = pci_read_config32(dev, X58_PCIE_LINK_CAP);
+
+	printk(BIOS_EMERG, "P6T SE/X58: %02x:%02x.%x LNKCAP=%08x (max x%u)\n",
+	       PCI_DEV2BUS(dev), PCI_SLOT(PCI_DEV2DEVFN(dev)),
+	       PCI_FUNC(PCI_DEV2DEVFN(dev)), link_cap, max_width);
+	return (link_cap & mask) == value;
+}
+
+static bool p6t_se_probe_x58_pcie(void)
+{
+	unsigned int active_links = 0;
+
+	/* Device 0 is the x4 DMI-side port in the original firmware sequence. */
+	if (!p6t_se_program_x58_link_cap(PCI_DEV(0, 0, 0), 4))
+		return false;
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(p6t_se_pcie_ports); i++) {
+		const struct x58_pcie_port *port = &p6t_se_pcie_ports[i];
+		const pci_devfn_t dev = PCI_DEV(0, port->device, 0);
+		const u16 vendor = pci_read_config16(dev, PCI_VENDOR_ID);
+		const u16 device = pci_read_config16(dev, PCI_DEVICE_ID);
+		const u16 bif = pci_read_config16(dev, X58_PCIE_IOU_BIF_CTRL);
+		const u16 link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
+		const unsigned int speed = link & X58_PCIE_LINK_SPEED_MASK;
+		const unsigned int width =
+			(link & X58_PCIE_LINK_WIDTH_MASK) >> X58_PCIE_LINK_WIDTH_SHIFT;
+
+		printk(BIOS_EMERG,
+		       "P6T SE/X58: 00:%02x.0 ID=%04x:%04x IOU%u bif=%x PCIe Gen%u x%u %s\n",
+		       port->device, vendor, device, port->iou, bif & 7,
+		       speed, width,
+		       link & X58_PCIE_DLL_ACTIVE ? "active" : "down");
+
+		if (vendor != PCI_VID_INTEL || device != port->device_id)
+			return false;
+		if (!p6t_se_program_x58_link_cap(dev, port->max_width))
+			return false;
+		if (link & X58_PCIE_DLL_ACTIVE)
+			active_links++;
+	}
+
+	/* Empty expansion slots legitimately report no active data link. */
+	printk(BIOS_EMERG, "P6T SE/X58: %u strapped PCIe link(s) active\n",
+	       active_links);
+	return true;
+}
 
 static int read_spd_byte(uintptr_t base, u8 address, u8 offset)
 {
@@ -278,5 +369,12 @@ void mainboard_romstage_entry(void)
 	}
 	p6t_se_beep(9);
 
-	die("P6T SE/X58: DIMM topology milestone reached\n");
+	if (!p6t_se_probe_x58_pcie()) {
+		post_code(0xeb);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_PCIE_ROOT_PORT);
+		die("P6T SE/X58: expected PCIe root port is not visible\n");
+	}
+	p6t_se_beep(10);
+
+	die("P6T SE/X58: PCIe root-port milestone reached\n");
 }

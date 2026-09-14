@@ -10,6 +10,7 @@ enum p6t_se_beep_error {
 	P6T_SE_BEEP_ERR_IMC_CHANNEL = 4,
 	P6T_SE_BEEP_ERR_TIMINGS = 5,
 	P6T_SE_BEEP_ERR_TOPOLOGY = 6,
+	P6T_SE_BEEP_ERR_PCIE_ROOT_PORT = 7,
 };
 
 void p6t_se_beep(unsigned int count);

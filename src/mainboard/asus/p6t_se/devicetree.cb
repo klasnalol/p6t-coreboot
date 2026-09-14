@@ -7,6 +7,9 @@ chip northbridge/intel/x58
 	device domain 0 on
 		ops x58_pci_domain_ops
 		device pci 0.0 on end		# X58 ESI/host bridge
+		device pci 1.0 on end		# X58 IOU2, third mechanical x16 slot (x4)
+		device pci 3.0 on end		# X58 IOU0, first x16 slot
+		device pci 7.0 on end		# X58 IOU1, second x16 slot
 
 		chip southbridge/intel/i82801jx
 			register "sata_port_map" = "0x3f"
