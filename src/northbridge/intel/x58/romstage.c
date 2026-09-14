@@ -3,165 +3,75 @@
 #include <arch/io.h>
 #include <arch/romstage.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/pci_ops.h>
+#include <device/dram/ddr3.h>
 #include <device/smbus_host.h>
 #include <halt.h>
 #include <post.h>
 #include <types.h>
 
 #include "../../../mainboard/asus/p6t_se/beep.h"
+#include "../../../mainboard/asus/p6t_se/early_init.h"
 #include "minit_internal.h"
+#include "raminit.h"
+#include "x58.h"
 
-#define SPD_ADDR		0x50
-#define SPD_TEST_BYTES		16
+#define SPD_FIRST_ADDR		0x50
+#define SPD_SLOT_COUNT		6
 #define SPD_TYPE_BYTE		2
 #define SPD_TYPE_DDR3		0x0b
+#define SPD_READ_RETRIES	20
 
-/*
- * P6T SE stock BIOS values recovered from MINITDLL.
- *
- * ICH10 LPC = 00:1f.0
- *
- * PCI config:
- *   0x40 PMBASE
- *   0x44 ACPI_CNTL
- *   0x48 GPIOBASE
- *   0x4c GPIO_CNTL
- */
-#define P6T_PMBASE		0x0800
-#define P6T_GPIOBASE		0x0500
-
-#define LPC_PMBASE		0x40
-#define LPC_ACPI_CNTL		0x44
-#define LPC_GPIOBASE		0x48
-#define LPC_GPIO_CNTL		0x4c
-
-/*
- * ICH10 GPIO bank 2 registers.
- * These correspond directly to the accesses recovered from
- * the ASUS P6T SE stock MINITDLL.
- */
-#define GP_IO_USE_SEL2		0x30
-#define GP_IO_SEL2		0x34
-#define GP_LVL2			0x38
-
-static void p6t_se_setup_stock_ich10_bases(void)
+static int read_spd_byte(uintptr_t base, u8 address, u8 offset)
 {
-	const pci_devfn_t lpc = PCI_DEV(0, 0x1f, 0);
-	u8 reg8;
+	int value = -1;
 
-	printk(BIOS_EMERG,
-	       "P6T SE: programming stock PM/GPIO base addresses\n");
-
-	/* Stock P6T SE: PMBASE = 0x800. */
-	pci_write_config32(lpc, LPC_PMBASE, P6T_PMBASE | 1);
-
-	/* Enable ACPI/PM I/O decoding. */
-	pci_write_config8(lpc, LPC_ACPI_CNTL, 0x80);
-
-	/* Stock P6T SE: GPIOBASE = 0x500. */
-	pci_write_config32(lpc, LPC_GPIOBASE, P6T_GPIOBASE | 1);
-
-	/* Enable GPIO I/O space. */
-	reg8 = pci_read_config8(lpc, LPC_GPIO_CNTL);
-	reg8 |= 0x10;
-	pci_write_config8(lpc, LPC_GPIO_CNTL, reg8);
-
-	printk(BIOS_EMERG,
-	       "P6T SE: PMBASE=%08x GPIOBASE=%08x GPIO_CNTL=%02x\n",
-	       pci_read_config32(lpc, LPC_PMBASE),
-	       pci_read_config32(lpc, LPC_GPIOBASE),
-	       pci_read_config8(lpc, LPC_GPIO_CNTL));
-}
-
-/*
- * Reverse engineered from ASUS MINITDLL SpdMuxTransaction().
- *
- * GPIO36/37 select the SPD mux branch.
- * GPIO38 determines whether the special mux path is required.
- *
- * GPIO_USE_SEL2 bits 4,5,6 -> GPIO36, GPIO37, GPIO38.
- *
- * GPIO36 = output
- * GPIO37 = output
- * GPIO38 = input
- *
- * For logical SPD 0x50/0x51, stock selects:
- *
- *	GPIO37:GPIO36 = 0:1
- *
- * If GPIO38 is high, stock firmware instead clears the two
- * mux outputs and performs a normal/direct SMBus transaction.
- */
-static void p6t_se_select_spd_50(void)
-{
-	u16 use;
-	u16 dir;
-	u16 level;
-
-	use = inw(P6T_GPIOBASE + GP_IO_USE_SEL2);
-	printk(BIOS_EMERG,
-	       "P6T SE: GPIO_USE_SEL2 before = %04x\n", use);
-
-	use |= 0x0070;
-	outw(use, P6T_GPIOBASE + GP_IO_USE_SEL2);
-
-	dir = inw(P6T_GPIOBASE + GP_IO_SEL2);
-	printk(BIOS_EMERG,
-	       "P6T SE: GP_IO_SEL2 before = %04x\n", dir);
-
-	/*
-	 * Clear direction bits for GPIO36/37/38, then set GPIO38
-	 * as input. ICH GPIO direction bit:
-	 *
-	 *	0 = output
-	 *	1 = input
-	 */
-	dir &= ~0x0070;
-	dir |= 0x0040;
-	outw(dir, P6T_GPIOBASE + GP_IO_SEL2);
-
-	level = inw(P6T_GPIOBASE + GP_LVL2);
-
-	printk(BIOS_EMERG,
-	       "P6T SE: GP_LVL2 before mux select = %04x\n",
-	       level);
-
-	if (level & 0x0040) {
-		/*
-		 * GPIO38 high.
-		 *
-		 * This exactly follows the stock MINIT fallback:
-		 * clear GPIO36/37 and let the normal SMBus path
-		 * access the EEPROM directly.
-		 */
-		level &= ~0x0030;
-
-		printk(BIOS_EMERG,
-		       "P6T SE: GPIO38 high - direct SPD path\n");
-	} else {
-		/*
-		 * GPIO38 low.
-		 *
-		 * Stock mux selection for logical SPD addresses
-		 * 0x50/0x51:
-		 *
-		 *	GPIO37:GPIO36 = 0:1
-		 */
-		level &= ~0x0030;
-		level |= 0x0010;
-
-		printk(BIOS_EMERG,
-		       "P6T SE: GPIO38 low - selecting SPD 0x50/0x51 branch\n");
+	p6t_se_select_spd_mux(address);
+	for (unsigned int retry = 0; retry < SPD_READ_RETRIES; retry++) {
+		value = do_smbus_read_byte(base, address, offset);
+		if (value >= 0)
+			break;
+		udelay(100000);
 	}
 
-	outw(level, P6T_GPIOBASE + GP_LVL2);
+	return value;
+}
 
-	printk(BIOS_EMERG,
-	       "P6T SE: GPIO_USE_SEL2=%04x GP_IO_SEL2=%04x GP_LVL2=%04x\n",
-	       inw(P6T_GPIOBASE + GP_IO_USE_SEL2),
-	       inw(P6T_GPIOBASE + GP_IO_SEL2),
-	       inw(P6T_GPIOBASE + GP_LVL2));
+static bool read_spd(uintptr_t base, u8 address, spd_ddr3_raw_data spd)
+{
+	int value;
+
+	for (unsigned int offset = 0; offset < SPD_SIZE_MAX_DDR3; offset++) {
+		value = read_spd_byte(base, address, offset);
+		if (value < 0)
+			return false;
+		spd[offset] = value;
+	}
+
+	return true;
+}
+
+static bool decode_ddr3_spd(u8 address, spd_ddr3_raw_data spd,
+			    struct dimm_attr_ddr3_st *dimm)
+{
+	if (spd[SPD_TYPE_BYTE] != SPD_TYPE_DDR3) {
+		printk(BIOS_ERR, "P6T SE: SPD 0x%02x is not DDR3 (type %02x)\n",
+		       address, spd[SPD_TYPE_BYTE]);
+		return false;
+	}
+
+	if (spd_decode_ddr3(dimm, spd) != SPD_STATUS_OK) {
+		printk(BIOS_ERR, "P6T SE: SPD 0x%02x failed DDR3 decoding\n",
+		       address);
+		return false;
+	}
+
+	printk(BIOS_INFO,
+	       "P6T SE: SPD 0x%02x: %u MiB, %u rank(s), x%u, CAS mask %04x\n",
+	       address, dimm->size_mb, dimm->ranks, dimm->width,
+	       dimm->cas_supported);
+	return true;
 }
 
 static void p6t_se_private_imc_probe(void)
@@ -177,7 +87,7 @@ static void p6t_se_private_imc_probe(void)
 	printk(BIOS_EMERG, "P6T SE/X58: ff:03.4 ID=%08x\n", id);
 	if (id != 0x2d9c8086) {
 		post_code(0xf6);
-		p6t_se_beep(1);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_IMC_DEVICE);
 		die("P6T SE/X58: Westmere IMC test device not visible\n");
 	}
 
@@ -189,7 +99,7 @@ static void p6t_se_private_imc_probe(void)
 	d = x58_minit_global_desc(idx);
 	if (idx != 0x15 || !d || !x58_minit_read_global(bus, idx, &value)) {
 		post_code(0xf7);
-		p6t_se_beep(2);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_IMC_GLOBAL);
 		die("P6T SE/X58: global private IMC read failed\n");
 	}
 	printk(BIOS_EMERG,
@@ -201,7 +111,7 @@ static void p6t_se_private_imc_probe(void)
 	d = x58_minit_global_desc(idx);
 	if (idx != 0x14 || !d || !x58_minit_read_global(bus, idx, &value)) {
 		post_code(0xf7);
-		p6t_se_beep(2);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_IMC_GLOBAL);
 		die("P6T SE/X58: second global private IMC read failed\n");
 	}
 	printk(BIOS_EMERG,
@@ -213,7 +123,7 @@ static void p6t_se_private_imc_probe(void)
 	d = x58_minit_global_desc(idx);
 	if (idx != 0x18 || !d || !x58_minit_read_global(bus, idx, &value)) {
 		post_code(0xf7);
-		p6t_se_beep(2);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_IMC_GLOBAL);
 		die("P6T SE/X58: signed-offset private IMC read failed\n");
 	}
 	printk(BIOS_EMERG,
@@ -228,7 +138,7 @@ static void p6t_se_private_imc_probe(void)
 	d = x58_minit_channel_desc(idx);
 	if (idx != 0x239 || !d || !x58_minit_read_channel(bus, 0, idx, &value)) {
 		post_code(0xf8);
-		p6t_se_beep(3);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_IMC_CHANNEL);
 		die("P6T SE/X58: channel private IMC read failed\n");
 	}
 	printk(BIOS_EMERG,
@@ -243,22 +153,24 @@ static void p6t_se_private_imc_probe(void)
 
 void mainboard_romstage_entry(void)
 {
-	u8 spd[SPD_TEST_BYTES];
+	spd_ddr3_raw_data spd;
+	struct dimm_attr_ddr3_st dimm;
+	struct x58_raminit_state ctrl = { 0 };
+	u8 spd_map[SPD_SLOT_COUNT];
 	uintptr_t base;
-	int value;
-	int i;
+	unsigned int populated = 0;
+	unsigned int valid = 0;
 
 	post_code(0xe0);
 
-	printk(BIOS_EMERG,
-	       "P6T SE/X58: stock-derived SMBus/SPD mux test\n");
+	printk(BIOS_INFO, "P6T SE/X58: discovering DDR3 DIMMs\n");
 
 	/*
 	 * The generic ICH10 code currently programmed different
 	 * PM/GPIO bases earlier. Reprogram the P6T SE stock values
 	 * before touching its SPD mux.
 	 */
-	p6t_se_setup_stock_ich10_bases();
+	p6t_se_configure_stock_bases();
 
 	/*
 	 * Existing ICH10 coreboot SMBus initialization.
@@ -267,9 +179,7 @@ void mainboard_romstage_entry(void)
 	enable_smbus();
 	base = smbus_base();
 
-	printk(BIOS_EMERG,
-	       "P6T SE/X58: SMBus enabled at %p\n",
-	       (void *)base);
+	printk(BIOS_INFO, "P6T SE/X58: SMBus enabled at %p\n", (void *)base);
 
 	/*
 	 * Existing diagnostic:
@@ -278,92 +188,95 @@ void mainboard_romstage_entry(void)
 	post_code(0xe2);
 	p6t_se_beep(2);
 
-	/*
-	 * Apply the GPIO SPD routing recovered from ASUS MINITDLL.
-	 */
-	p6t_se_select_spd_50();
-
-	/*
-	 * 5 beeps = stock SPD mux setup itself completed.
-	 */
+	/* 5 beeps = begin the stock-derived six-slot SPD scan. */
 	post_code(0xe5);
 	p6t_se_beep(5);
+	mb_get_spd_map(spd_map);
 
-	/*
-	 * Read the first 16 bytes of SPD EEPROM 0x50.
-	 */
-	for (i = 0; i < SPD_TEST_BYTES; i++) {
-		value = do_smbus_read_byte(base, SPD_ADDR, i);
+	for (unsigned int slot = 0; slot < SPD_SLOT_COUNT; slot++) {
+		const u8 address = spd_map[slot];
+		int type;
 
-		if (value < 0) {
-			u8 status = inb(base);
-
-			printk(BIOS_EMERG,
-			       "P6T SE/X58: SPD 0x%02x read failed "
-			       "at byte %d, error %d, HSTSTAT=%02x\n",
-			       SPD_ADDR, i, value, status);
-
-			post_code(0xef);
-
-			/*
-			 * Failure marker.
-			 */
-			p6t_se_beep(1);
-
-			die("P6T SE/X58: SPD read failed\n");
+		if (address < SPD_FIRST_ADDR || address >= SPD_FIRST_ADDR + SPD_SLOT_COUNT) {
+			printk(BIOS_ERR, "P6T SE: invalid SPD map entry 0x%02x for slot %u\n",
+			       address, slot);
+			continue;
 		}
 
-		spd[i] = (u8)value;
+		/* An absent slot is expected and must not abort discovery. */
+		type = read_spd_byte(base, address, SPD_TYPE_BYTE);
+		if (type < 0) {
+			printk(BIOS_DEBUG, "P6T SE: DIMM slot %u (SPD 0x%02x) empty\n",
+			       slot, address);
+			continue;
+		}
 
-		printk(BIOS_EMERG,
-		       "P6T SE/X58: SPD[%02x] = %02x\n",
-		       i, spd[i]);
+		populated++;
+		if (!read_spd(base, address, spd)) {
+			printk(BIOS_ERR,
+			       "P6T SE: SPD 0x%02x read failed, HSTSTAT=%02x\n",
+			       address, inb(base));
+			continue;
+		}
+
+		if (decode_ddr3_spd(address, spd, &dimm) &&
+		    x58_raminit_add_dimm(&ctrl, slot / X58_DIMMS_PER_CHANNEL,
+					  slot % X58_DIMMS_PER_CHANNEL,
+					  address, spd, &dimm)) {
+			valid++;
+			printk(BIOS_INFO, "P6T SE: channel %u DIMM %u populated\n",
+			       slot / 2, slot % 2);
+		}
 	}
 
 	/*
-	 * 3 beeps = all 16 reads worked.
+	 * 3 beeps = the complete slot scan finished.
 	 */
 	post_code(0xe3);
 	p6t_se_beep(3);
 
-	printk(BIOS_EMERG,
-	       "P6T SE/X58: SPD 0x50 bytes 00-0f:");
+	printk(BIOS_INFO, "P6T SE: %u populated slot(s), %u valid DDR3 SPD(s)\n",
+	       populated, valid);
 
-	for (i = 0; i < SPD_TEST_BYTES; i++)
-		printk(BIOS_EMERG, " %02x", spd[i]);
-
-	printk(BIOS_EMERG, "\n");
-
-	printk(BIOS_EMERG,
-	       "P6T SE/X58: SPD memory type = %02x\n",
-	       spd[SPD_TYPE_BYTE]);
-
-	if (spd[SPD_TYPE_BYTE] != SPD_TYPE_DDR3) {
-		printk(BIOS_EMERG,
-		       "P6T SE/X58: expected DDR3 type 0x0b\n");
-
+	if (!valid) {
 		post_code(0xee);
-		p6t_se_beep(1);
-
-		die("P6T SE/X58: unexpected SPD memory type\n");
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_NO_VALID_SPD);
+		die("P6T SE/X58: no valid DDR3 SPD found\n");
 	}
 
+	if (valid != populated)
+		printk(BIOS_WARNING,
+		       "P6T SE: ignoring %u DIMM(s) with unreadable or invalid SPD\n",
+			       populated - valid);
+
+	if (!x58_raminit_select_common_params(&ctrl)) {
+		post_code(0xed);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_TIMINGS);
+		die("P6T SE/X58: no safe common DDR3 timing set\n");
+	}
+	x58_raminit_report(&ctrl);
+
 	/*
-	 * 4 beeps = full success:
+	 * 4 beeps = discovery success:
 	 *
 	 *   stock PM/GPIO bases configured
-	 *   stock SPD mux configured
+	 *   all three stock SPD mux routes exercised
 	 *   ICH10 SMBus operational
-	 *   bytes 0..15 readable
-	 *   byte 2 == 0x0b (DDR3)
+	 *   at least one complete DDR3 SPD has a valid CRC
 	 */
 	post_code(0xe4);
 	p6t_se_beep(4);
 
-	printk(BIOS_EMERG,
-	       "P6T SE/X58: STOCK-DERIVED SPD TEST PASSED\n");
+	printk(BIOS_INFO, "P6T SE/X58: stock-derived SPD discovery passed\n");
 
 	p6t_se_private_imc_probe();
 
-	die("P6T SE/X58: private IMC milestone reached\n");
+	if (!x58_raminit_program_topology(&ctrl)) {
+		post_code(0xec);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_TOPOLOGY);
+		die("P6T SE/X58: IMC topology register verification failed\n");
+	}
+	p6t_se_beep(9);
+
+	die("P6T SE/X58: DIMM topology milestone reached\n");
 }
