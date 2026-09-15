@@ -4,6 +4,7 @@
 #include <arch/romstage.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -30,12 +31,26 @@
 #define  X58_PCIE_LINK_CAP_L1_EXIT_32_TO_64_US	(6 << 15)
 #define  X58_PCIE_LINK_CAP_WIDTH_MASK	0x000003f0
 #define  X58_PCIE_LINK_CAP_WIDTH_SHIFT	4
+#define X58_PCIE_CAP		0x92
+#define  X58_PCIE_CAP_SLOT	BIT(8)
+#define X58_PCIE_LINK_CONTROL	0xa0
+#define  X58_PCIE_LINK_RETRAIN	BIT(5)
 #define X58_PCIE_LINK_STATUS	0xa2
 #define  X58_PCIE_LINK_SPEED_MASK	0x000f
 #define  X58_PCIE_LINK_WIDTH_MASK	0x03f0
 #define  X58_PCIE_LINK_WIDTH_SHIFT	4
 #define  X58_PCIE_DLL_ACTIVE	BIT(13)
+#define X58_PCIE_SLOT_STATUS	0xaa
+#define  X58_PCIE_SLOT_PRESENT	BIT(6)
+#define X58_PCIE_LINK_CONTROL2	0xc0
+#define  X58_PCIE_TARGET_SPEED_MASK	0x000f
+#define  X58_PCIE_TARGET_GEN1	1
+#define  X58_PCIE_TARGET_GEN2	2
+#define  X58_PCIE_SELECTABLE_DEEMPHASIS	BIT(6)
 #define X58_PCIE_IOU_BIF_CTRL	0x190
+
+/* Vendor POST's per-port recovery byte inside the X58 private ECAM window. */
+#define X58_PCIE_RECOVERY_REG	(CONFIG_ECAM_MMCONF_BASE_ADDRESS + 0x684b6)
 
 struct x58_pcie_port {
 	u8 device;
@@ -75,6 +90,51 @@ static bool p6t_se_program_x58_link_cap(pci_devfn_t dev,
 	return (link_cap & mask) == value;
 }
 
+static void p6t_se_train_x58_pcie_port(pci_devfn_t dev, u8 device)
+{
+	u16 link;
+	u16 slot_status;
+	u8 recovery_devfn;
+	uintptr_t recovery_reg;
+
+	/* PXPCAP.SI is write-once and enables the in-band presence state. */
+	pci_or_config16(dev, X58_PCIE_CAP, X58_PCIE_CAP_SLOT);
+	slot_status = pci_read_config16(dev, X58_PCIE_SLOT_STATUS);
+	if (!(slot_status & X58_PCIE_SLOT_PRESENT)) {
+		/* Match POST: probe at Gen1, then leave an empty slot targeting Gen2. */
+		pci_update_config16(dev, X58_PCIE_LINK_CONTROL2,
+				    ~X58_PCIE_TARGET_SPEED_MASK,
+				    X58_PCIE_TARGET_GEN1);
+		udelay(400);
+		slot_status = pci_read_config16(dev, X58_PCIE_SLOT_STATUS);
+		if (!(slot_status & X58_PCIE_SLOT_PRESENT)) {
+			pci_update_config16(dev, X58_PCIE_LINK_CONTROL2,
+					    ~X58_PCIE_TARGET_SPEED_MASK,
+					    X58_PCIE_TARGET_GEN2);
+			return;
+		}
+	}
+
+	link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
+	if (link & X58_PCIE_LINK_WIDTH_MASK)
+		return;
+
+	/* One bounded fallback attempt for a present card that failed training. */
+	pci_update_config16(dev, X58_PCIE_LINK_CONTROL2,
+			    (u16)~(X58_PCIE_TARGET_SPEED_MASK |
+				   X58_PCIE_SELECTABLE_DEEMPHASIS),
+			    X58_PCIE_TARGET_GEN1);
+	mdelay(4);
+
+	recovery_devfn = PCI_DEVFN(device, 0);
+	if (recovery_devfn >= PCI_DEVFN(7, 0))
+		recovery_devfn += 8;
+	recovery_reg = X58_PCIE_RECOVERY_REG + ((uintptr_t)recovery_devfn << 9);
+	write8p(recovery_reg, read8p(recovery_reg) & ~BIT(7));
+	pci_or_config16(dev, X58_PCIE_LINK_CONTROL, X58_PCIE_LINK_RETRAIN);
+	udelay(1000);
+}
+
 static bool p6t_se_probe_x58_pcie(void)
 {
 	unsigned int active_links = 0;
@@ -89,10 +149,21 @@ static bool p6t_se_probe_x58_pcie(void)
 		const u16 vendor = pci_read_config16(dev, PCI_VENDOR_ID);
 		const u16 device = pci_read_config16(dev, PCI_DEVICE_ID);
 		const u16 bif = pci_read_config16(dev, X58_PCIE_IOU_BIF_CTRL);
-		const u16 link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
-		const unsigned int speed = link & X58_PCIE_LINK_SPEED_MASK;
-		const unsigned int width =
-			(link & X58_PCIE_LINK_WIDTH_MASK) >> X58_PCIE_LINK_WIDTH_SHIFT;
+		u16 link;
+		unsigned int speed;
+		unsigned int width;
+
+		if (vendor != PCI_VID_INTEL || device != port->device_id)
+			return false;
+
+		p6t_se_train_x58_pcie_port(dev, port->device);
+		if (!p6t_se_program_x58_link_cap(dev, port->max_width))
+			return false;
+
+		link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
+		speed = link & X58_PCIE_LINK_SPEED_MASK;
+		width = (link & X58_PCIE_LINK_WIDTH_MASK) >>
+			X58_PCIE_LINK_WIDTH_SHIFT;
 
 		printk(BIOS_EMERG,
 		       "P6T SE/X58: 00:%02x.0 ID=%04x:%04x IOU%u bif=%x PCIe Gen%u x%u %s\n",
@@ -100,10 +171,6 @@ static bool p6t_se_probe_x58_pcie(void)
 		       speed, width,
 		       link & X58_PCIE_DLL_ACTIVE ? "active" : "down");
 
-		if (vendor != PCI_VID_INTEL || device != port->device_id)
-			return false;
-		if (!p6t_se_program_x58_link_cap(dev, port->max_width))
-			return false;
 		if (link & X58_PCIE_DLL_ACTIVE)
 			active_links++;
 	}
