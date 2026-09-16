@@ -6,3 +6,5 @@ ramstage-y += hda_verb.c
 
 bootblock-y += beep.c
 romstage-y += beep.c
+ramstage-y += beep.c
+ramstage-y += ramstage.c

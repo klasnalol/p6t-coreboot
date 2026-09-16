@@ -12,11 +12,13 @@
 #include <device/smbus_host.h>
 #include <halt.h>
 #include <post.h>
+#include <romstage_handoff.h>
 #include <types.h>
 
 #include "../../../mainboard/asus/p6t_se/beep.h"
 #include "../../../mainboard/asus/p6t_se/early_init.h"
 #include "minit_internal.h"
+#include "minit.h"
 #include "raminit.h"
 #include "x58.h"
 
@@ -59,6 +61,11 @@ struct x58_pcie_port {
 	u8 max_width;
 };
 
+struct x58_private_port_group {
+	u8 devfn;
+	u8 port_count;
+};
+
 static const struct x58_pcie_port p6t_se_pcie_ports[] = {
 	/* IOU2 is the board's third mechanical x16 slot, wired as x4. */
 	{ 1, 0x3408, 2, 4 },
@@ -66,6 +73,115 @@ static const struct x58_pcie_port p6t_se_pcie_ports[] = {
 	{ 3, 0x340a, 0, 16 },
 	{ 7, 0x340e, 1, 16 },
 };
+
+static const struct x58_private_port_group p6t_se_private_port_groups[] = {
+	{ 0x68, 1 },
+	{ 0x69, 2 },
+	{ 0x6b, 4 },
+	{ 0x70, 4 },
+};
+
+static uintptr_t x58_private_ecam(u8 devfn, u16 reg)
+{
+	return CONFIG_ECAM_MMCONF_BASE_ADDRESS + ((uintptr_t)devfn << 12) + reg;
+}
+
+static void x58_private_write8(u8 devfn, u16 reg, u8 value)
+{
+	write8p(x58_private_ecam(devfn, reg), value);
+}
+
+static void x58_private_update8(u8 devfn, u16 reg, u8 clear, u8 set)
+{
+	const uintptr_t addr = x58_private_ecam(devfn, reg);
+
+	write8p(addr, (read8p(addr) & ~clear) | set);
+}
+
+static void x58_private_apply8(u8 devfn, u16 reg, u8 preserve, u8 value)
+{
+	const uintptr_t addr = x58_private_ecam(devfn, reg);
+
+	write8p(addr, (read8p(addr) & preserve) | (value & ~preserve));
+}
+
+static void x58_private_apply16(u8 devfn, u16 reg, u16 preserve, u16 value)
+{
+	const uintptr_t addr = x58_private_ecam(devfn, reg);
+
+	write16p(addr, (read16p(addr) & preserve) | (value & ~preserve));
+}
+
+static void x58_private_apply32(u8 devfn, u16 reg, u32 preserve, u32 value)
+{
+	const uintptr_t addr = x58_private_ecam(devfn, reg);
+
+	write32p(addr, (read32p(addr) & preserve) | (value & ~preserve));
+}
+
+static void p6t_se_program_x58_early_pcie(u8 revision)
+{
+	/* POST applies this table to every X58 root-port function. */
+	for (u8 devfn = PCI_DEVFN(1, 0); devfn <= PCI_DEVFN(10, 0); devfn += 8) {
+		x58_private_apply8(devfn, 0x03d, 0x00, 0x00);
+		x58_private_apply32(devfn, 0x088, 0xbffffffd, 0x40000000);
+		x58_private_apply8(devfn, 0x034, 0x00, 0x40);
+		x58_private_apply32(devfn, 0x218, 0xffc80fcf, 0x00000000);
+		x58_private_apply16(devfn, 0x21c, 0xce3e, 0x0000);
+		x58_private_apply8(devfn, 0x220, 0xf8, 0x00);
+		x58_private_apply16(devfn, 0x224, 0xfc85, 0x0000);
+		x58_private_apply8(devfn, 0x228, 0xfe, 0x00);
+	}
+
+	/* The P6T SE uses the newer (revision 0x10 or later) POST path. */
+	if (revision >= 0x10) {
+		x58_private_update8(0x68, 0x085, 0x00, 0x06);
+		x58_private_update8(0x6b, 0x085, 0x00, 0x06);
+		x58_private_update8(0x70, 0x085, 0x00, 0x06);
+		x58_private_update8(0x68, 0xf91, 0x00, 0x40);
+		x58_private_update8(0x69, 0xf91, 0x00, 0x40);
+	} else {
+		x58_private_update8(0x00, 0x109, 0x00, 0x40);
+	}
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(p6t_se_private_port_groups); i++)
+		x58_private_update8(p6t_se_private_port_groups[i].devfn,
+				    0x4c4, 0x3f, 0x09);
+	x58_private_update8(0x6f, 0x30f, 0x00, 0x80);
+}
+
+static void p6t_se_program_x58_private_pcie(void)
+{
+	/* Exact hidden-function setup preceding root-port training in POST. */
+	x58_private_write8(0x6b, 0x331, 0x53);
+	x58_private_write8(0x70, 0x331, 0x53);
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(p6t_se_private_port_groups); i++) {
+		const struct x58_private_port_group *group =
+			&p6t_se_private_port_groups[i];
+
+		x58_private_write8(group->devfn, 0x1a2, 0x05);
+		x58_private_write8(group->devfn, 0x1a0, 0xff);
+		for (u8 port = group->port_count; port > 0; port--) {
+			x58_private_update8(group->devfn, 0x11f, 0x1e,
+					    (port - 1) << 1);
+			x58_private_update8(group->devfn, 0x1b5, 0x0f, 0x08);
+			x58_private_write8(group->devfn, 0x1b4, 0x65);
+		}
+	}
+}
+
+static void p6t_se_program_x58_private_root_ports(void)
+{
+	for (u8 devfn = 0x68; devfn < 0x6f; devfn++) {
+		x58_private_update8(devfn, 0x338, 0xf0, 0x90);
+		x58_private_update8(devfn, 0x393, 0x02, 0x02);
+	}
+	for (u8 devfn = 0x70; devfn < 0x74; devfn++) {
+		x58_private_update8(devfn, 0x338, 0xf0, 0x90);
+		x58_private_update8(devfn, 0x393, 0x02, 0x02);
+	}
+}
 
 static bool p6t_se_program_x58_link_cap(pci_devfn_t dev,
 					unsigned int max_width)
@@ -105,7 +221,8 @@ static void p6t_se_train_x58_pcie_port(pci_devfn_t dev, u8 device)
 		pci_update_config16(dev, X58_PCIE_LINK_CONTROL2,
 				    ~X58_PCIE_TARGET_SPEED_MASK,
 				    X58_PCIE_TARGET_GEN1);
-		udelay(400);
+		/* POST waits 0x190 refresh-toggle transitions, approximately 3 ms. */
+		mdelay(4);
 		slot_status = pci_read_config16(dev, X58_PCIE_SLOT_STATUS);
 		if (!(slot_status & X58_PCIE_SLOT_PRESENT)) {
 			pci_update_config16(dev, X58_PCIE_LINK_CONTROL2,
@@ -124,7 +241,8 @@ static void p6t_se_train_x58_pcie_port(pci_devfn_t dev, u8 device)
 			    (u16)~(X58_PCIE_TARGET_SPEED_MASK |
 				   X58_PCIE_SELECTABLE_DEEMPHASIS),
 			    X58_PCIE_TARGET_GEN1);
-	mdelay(4);
+	/* POST waits 0x1000 refresh-toggle transitions, approximately 31 ms. */
+	mdelay(31);
 
 	recovery_devfn = PCI_DEVFN(device, 0);
 	if (recovery_devfn >= PCI_DEVFN(7, 0))
@@ -132,12 +250,39 @@ static void p6t_se_train_x58_pcie_port(pci_devfn_t dev, u8 device)
 	recovery_reg = X58_PCIE_RECOVERY_REG + ((uintptr_t)recovery_devfn << 9);
 	write8p(recovery_reg, read8p(recovery_reg) & ~BIT(7));
 	pci_or_config16(dev, X58_PCIE_LINK_CONTROL, X58_PCIE_LINK_RETRAIN);
-	udelay(1000);
+	mdelay(1);
 }
 
 static bool p6t_se_probe_x58_pcie(void)
 {
+	const pci_devfn_t ioh = PCI_DEV(0, 0, 0);
+	const u32 ioh_id = pci_read_config32(ioh, PCI_VENDOR_ID);
+	const u8 revision = pci_read_config8(ioh, PCI_REVISION_ID) & 0x7f;
 	unsigned int active_links = 0;
+
+	/* This matches the family check used by the vendor revision helper. */
+	if ((ioh_id & 0xfff8ffff) != 0x34008086)
+		return false;
+
+	for (unsigned int i = 0; i < ARRAY_SIZE(p6t_se_pcie_ports); i++) {
+		const struct x58_pcie_port *port = &p6t_se_pcie_ports[i];
+		const pci_devfn_t dev = PCI_DEV(0, port->device, 0);
+		const u16 vendor = pci_read_config16(dev, PCI_VENDOR_ID);
+		const u16 device = pci_read_config16(dev, PCI_DEVICE_ID);
+
+		if (vendor != PCI_VID_INTEL || device != port->device_id)
+			return false;
+	}
+
+	p6t_se_program_x58_early_pcie(revision);
+	p6t_se_program_x58_private_pcie();
+	for (unsigned int i = 0; i < ARRAY_SIZE(p6t_se_pcie_ports); i++) {
+		const struct x58_pcie_port *port = &p6t_se_pcie_ports[i];
+		const pci_devfn_t dev = PCI_DEV(0, port->device, 0);
+
+		p6t_se_train_x58_pcie_port(dev, port->device);
+	}
+	p6t_se_program_x58_private_root_ports();
 
 	/* Device 0 is the x4 DMI-side port in the original firmware sequence. */
 	if (!p6t_se_program_x58_link_cap(PCI_DEV(0, 0, 0), 4))
@@ -149,21 +294,13 @@ static bool p6t_se_probe_x58_pcie(void)
 		const u16 vendor = pci_read_config16(dev, PCI_VENDOR_ID);
 		const u16 device = pci_read_config16(dev, PCI_DEVICE_ID);
 		const u16 bif = pci_read_config16(dev, X58_PCIE_IOU_BIF_CTRL);
-		u16 link;
-		unsigned int speed;
-		unsigned int width;
+		const u16 link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
+		const unsigned int speed = link & X58_PCIE_LINK_SPEED_MASK;
+		const unsigned int width =
+			(link & X58_PCIE_LINK_WIDTH_MASK) >> X58_PCIE_LINK_WIDTH_SHIFT;
 
-		if (vendor != PCI_VID_INTEL || device != port->device_id)
-			return false;
-
-		p6t_se_train_x58_pcie_port(dev, port->device);
 		if (!p6t_se_program_x58_link_cap(dev, port->max_width))
 			return false;
-
-		link = pci_read_config16(dev, X58_PCIE_LINK_STATUS);
-		speed = link & X58_PCIE_LINK_SPEED_MASK;
-		width = (link & X58_PCIE_LINK_WIDTH_MASK) >>
-			X58_PCIE_LINK_WIDTH_SHIFT;
 
 		printk(BIOS_EMERG,
 		       "P6T SE/X58: 00:%02x.0 ID=%04x:%04x IOU%u bif=%x PCIe Gen%u x%u %s\n",
@@ -190,7 +327,7 @@ static int read_spd_byte(uintptr_t base, u8 address, u8 offset)
 		value = do_smbus_read_byte(base, address, offset);
 		if (value >= 0)
 			break;
-		udelay(100000);
+		mdelay(100);
 	}
 
 	return value;
@@ -377,10 +514,12 @@ void mainboard_romstage_entry(void)
 			continue;
 		}
 
-		if (decode_ddr3_spd(address, spd, &dimm) &&
-		    x58_raminit_add_dimm(&ctrl, slot / X58_DIMMS_PER_CHANNEL,
-					  slot % X58_DIMMS_PER_CHANNEL,
-					  address, spd, &dimm)) {
+		if (!decode_ddr3_spd(address, spd, &dimm))
+			continue;
+
+		if (x58_raminit_add_dimm(&ctrl, slot / X58_DIMMS_PER_CHANNEL,
+					 slot % X58_DIMMS_PER_CHANNEL,
+					 address, spd, &dimm)) {
 			valid++;
 			printk(BIOS_INFO, "P6T SE: channel %u DIMM %u populated\n",
 			       slot / 2, slot % 2);
@@ -429,10 +568,10 @@ void mainboard_romstage_entry(void)
 
 	p6t_se_private_imc_probe();
 
-	if (!x58_raminit_program_topology(&ctrl)) {
+	if (!x58_run_minit()) {
 		post_code(0xec);
 		p6t_se_beep_error(P6T_SE_BEEP_ERR_TOPOLOGY);
-		die("P6T SE/X58: IMC topology register verification failed\n");
+		die("P6T SE/X58: MINIT DDR3 training failed\n");
 	}
 	p6t_se_beep(9);
 
@@ -443,5 +582,6 @@ void mainboard_romstage_entry(void)
 	}
 	p6t_se_beep(10);
 
-	die("P6T SE/X58: PCIe root-port milestone reached\n");
+	printk(BIOS_INFO, "P6T SE/X58: DDR3 and PCIe initialization complete\n");
+	romstage_handoff_init(false);
 }

@@ -3,9 +3,15 @@
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_X58),y)
 
 romstage-y += memmap.c
+romstage-y += minit.c
 romstage-y += minit_internal.c
 romstage-y += raminit.c
 romstage-y += romstage.c
+
+cbfs-files-y += minit.bin
+minit.bin-file := $(call strip_quotes,$(CONFIG_X58_MINIT_FILE))
+minit.bin-type := raw
+minit.bin-compression := none
 
 ramstage-y += memmap.c
 ramstage-y += northbridge.c

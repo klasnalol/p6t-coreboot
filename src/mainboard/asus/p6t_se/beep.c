@@ -38,7 +38,7 @@ void p6t_se_beep(unsigned int count)
 		p6t_se_tone(BEEP_FREQUENCY, 120000, 120000);
 
 	/* Make successive checkpoint groups easy to distinguish. */
-	udelay(400000);
+	mdelay(400);
 }
 
 void p6t_se_beep_error(enum p6t_se_beep_error error)
@@ -52,6 +52,6 @@ void p6t_se_beep_error(enum p6t_se_beep_error error)
 		p6t_se_tone(ERROR_BEEP_FREQUENCY, 700000, 350000);
 		for (unsigned int i = 0; i < error; i++)
 			p6t_se_tone(BEEP_FREQUENCY, 120000, 120000);
-		udelay(900000);
+		mdelay(900);
 	}
 }

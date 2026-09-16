@@ -112,11 +112,11 @@ bool x58_raminit_select_common_params(struct x58_raminit_state *ctrl)
 	 * Start native bring-up at DDR3-800. Faster bins remain disabled until
 	 * training has been validated on hardware.
 	 */
-	if (ctrl->tck > TCK_800MHZ) {
+	if (ctrl->tck > TCK_400MHZ) {
 		printk(BIOS_ERR, "X58: a DIMM cannot run at the DDR3-800 safe bin\n");
 		return false;
 	}
-	ctrl->tck = TCK_800MHZ;
+	ctrl->tck = TCK_400MHZ;
 
 	for (ctrl->cas = MAX(DDR3_MIN_CAS, timing_cycles(ctrl->taa, ctrl->tck));
 	     ctrl->cas <= DDR3_MAX_CAS; ctrl->cas++) {

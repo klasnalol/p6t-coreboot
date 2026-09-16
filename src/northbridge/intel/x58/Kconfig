@@ -29,12 +29,19 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x10000
+	default 0x40000
 
 config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x2000
 	help
 	  Initial CAR stack size for X58/Westmere-EP bring-up.
+
+config X58_MINIT_FILE
+	string "Intel X58/Westmere MINIT binary path and filename"
+	default "3rdparty/blobs/northbridge/intel/x58/MINITDLL.dll"
+	help
+	  Path to MINITDLL.dll extracted from the board's original firmware.
+	  The binary is copied into CAR, PE-relocated, and used for DDR3 training.
 
 endif
