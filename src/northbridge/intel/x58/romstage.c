@@ -568,9 +568,19 @@ void mainboard_romstage_entry(void)
 
 	p6t_se_private_imc_probe();
 
+	/*
+	 * MINIT consumes the DIMM geometry and rank maps through private IMC
+	 * PCI functions.
+	 */
+	if (!x58_raminit_program_topology(&ctrl)) {
+		post_code(0xea);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_TOPOLOGY);
+		die("P6T SE/X58: IMC topology register verification failed\n");
+	}
+
 	if (!x58_run_minit()) {
 		post_code(0xec);
-		p6t_se_beep_error(P6T_SE_BEEP_ERR_TOPOLOGY);
+		p6t_se_beep_error(P6T_SE_BEEP_ERR_MINIT);
 		die("P6T SE/X58: MINIT DDR3 training failed\n");
 	}
 	p6t_se_beep(9);
