@@ -4,6 +4,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_X58),y)
 
 romstage-y += memmap.c
 romstage-y += csi.c
+romstage-y += csi_policy.c
 romstage-y += minit.c
 romstage-y += minit_internal.c
 romstage-y += raminit.c
