@@ -55,3 +55,22 @@ void p6t_se_beep_error(enum p6t_se_beep_error error)
 		mdelay(900);
 	}
 }
+
+void p6t_se_beep_error_detail(enum p6t_se_beep_error error,
+			      unsigned int detail)
+{
+	/*
+	 * Preserve the existing long + error code, then add a separated detail
+	 * group.  This makes a speaker recording distinguish loader, DLL, status,
+	 * memory-map, and DRAM-test failures without a POST card.
+	 */
+	for (unsigned int repeat = 0; repeat < 3; repeat++) {
+		p6t_se_tone(ERROR_BEEP_FREQUENCY, 700000, 350000);
+		for (unsigned int i = 0; i < error; i++)
+			p6t_se_tone(BEEP_FREQUENCY, 120000, 120000);
+		mdelay(600);
+		for (unsigned int i = 0; i < detail; i++)
+			p6t_se_tone(BEEP_FREQUENCY, 120000, 120000);
+		mdelay(900);
+	}
+}

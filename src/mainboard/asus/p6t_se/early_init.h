@@ -7,5 +7,6 @@
 
 void p6t_se_configure_stock_bases(void);
 void p6t_se_select_spd_mux(u8 spd_address);
+void p6t_se_finalize_minit_gpio(void);
 
 #endif

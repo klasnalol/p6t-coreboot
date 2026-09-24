@@ -44,4 +44,11 @@ config X58_MINIT_FILE
 	  Path to MINITDLL.dll extracted from the board's original firmware.
 	  The binary is copied into CAR, PE-relocated, and used for DDR3 training.
 
+config X58_CSI_INIT_FILE
+	string "Intel X58 CSI/QPI initialization binary path and filename"
+	default "3rdparty/blobs/northbridge/intel/x58/CSI_INITDLL.dll"
+	help
+	  Path to CSI_INITDLL.dll extracted from the board's original firmware.
+	  The binary initializes the CPU-to-X58 coherent fabric before MINIT.
+
 endif

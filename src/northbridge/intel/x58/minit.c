@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cbfs.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -9,18 +8,12 @@
 #include <types.h>
 
 #include "minit.h"
+#include "vendor_pe.h"
 
 #define MINIT_CBFS_NAME		"minit.bin"
 #define MINIT_IMAGE_SIZE	0x1df20
 #define MINIT_CONTEXT_SIZE	0x2af0
 #define MINIT_POLICY_SIZE	0xc4
-
-#define PE_DOS_SIGNATURE	0x5a4d
-#define PE_SIGNATURE		0x00004550
-#define PE_MACHINE_I386		0x014c
-#define PE_OPTIONAL_MAGIC_PE32	0x010b
-#define PE_RELOC_ABSOLUTE	0
-#define PE_RELOC_HIGHLOW	3
 
 #define X58_IOH_SYSTEM		PCI_DEV(0, 0x14, 0)
 #define X58_TSEGCTRL		0xa8
@@ -54,19 +47,7 @@
 #define POLICY_CHANNEL1_ENABLE	0x77
 #define POLICY_CHANNEL2_ENABLE	0x95
 
-static u8 minit_image[MINIT_IMAGE_SIZE] __aligned(16);
 static u8 minit_context[MINIT_CONTEXT_SIZE] __aligned(16);
-
-static u16 read_le16(const u8 *p)
-{
-	return p[0] | ((u16)p[1] << 8);
-}
-
-static u32 read_le32(const u8 *p)
-{
-	return p[0] | ((u32)p[1] << 8) | ((u32)p[2] << 16) |
-		((u32)p[3] << 24);
-}
 
 static void write_le16(u8 *p, u16 value)
 {
@@ -80,11 +61,6 @@ static void write_le32(u8 *p, u32 value)
 	p[1] = value >> 8;
 	p[2] = value >> 16;
 	p[3] = value >> 24;
-}
-
-static bool range_valid(u32 offset, u32 length, u32 limit)
-{
-	return offset <= limit && length <= limit - offset;
 }
 
 static void build_minit_policy(u8 policy[MINIT_POLICY_SIZE])
@@ -129,63 +105,7 @@ static void build_minit_policy(u8 policy[MINIT_POLICY_SIZE])
 	policy[POLICY_CHANNEL2_ENABLE] = 1;
 }
 
-static bool relocate_minit(u32 *entry_rva)
-{
-	const u32 pe_offset = read_le32(&minit_image[0x3c]);
-	u32 image_base;
-	u32 image_size;
-	u32 reloc_rva;
-	u32 reloc_size;
-	u32 cursor;
-	u32 delta;
-
-	if (read_le16(minit_image) != PE_DOS_SIGNATURE ||
-	    !range_valid(pe_offset, 0xa8, MINIT_IMAGE_SIZE) ||
-	    read_le32(&minit_image[pe_offset]) != PE_SIGNATURE ||
-	    read_le16(&minit_image[pe_offset + 4]) != PE_MACHINE_I386 ||
-	    read_le16(&minit_image[pe_offset + 24]) != PE_OPTIONAL_MAGIC_PE32)
-		return false;
-
-	*entry_rva = read_le32(&minit_image[pe_offset + 40]);
-	image_base = read_le32(&minit_image[pe_offset + 52]);
-	image_size = read_le32(&minit_image[pe_offset + 80]);
-	reloc_rva = read_le32(&minit_image[pe_offset + 160]);
-	reloc_size = read_le32(&minit_image[pe_offset + 164]);
-
-	if (image_size != MINIT_IMAGE_SIZE || *entry_rva >= image_size ||
-	    !range_valid(reloc_rva, reloc_size, image_size))
-		return false;
-
-	delta = (u32)(uintptr_t)minit_image - image_base;
-	for (cursor = reloc_rva; cursor < reloc_rva + reloc_size;) {
-		const u32 page_rva = read_le32(&minit_image[cursor]);
-		const u32 block_size = read_le32(&minit_image[cursor + 4]);
-		u32 entry;
-
-		if (block_size < 8 || (block_size & 1) ||
-		    !range_valid(cursor, block_size, reloc_rva + reloc_size))
-			return false;
-
-		for (entry = cursor + 8; entry < cursor + block_size; entry += 2) {
-			const u16 reloc = read_le16(&minit_image[entry]);
-			const u8 type = reloc >> 12;
-			const u32 target = page_rva + (reloc & 0x0fff);
-
-			if (type == PE_RELOC_ABSOLUTE)
-				continue;
-			if (type != PE_RELOC_HIGHLOW ||
-			    !range_valid(target, sizeof(u32), image_size))
-				return false;
-			write_le32(&minit_image[target],
-				   read_le32(&minit_image[target]) + delta);
-		}
-		cursor += block_size;
-	}
-
-	return cursor == reloc_rva + reloc_size;
-}
-
-static bool validate_trained_memory(void)
+enum x58_minit_result x58_validate_trained_memory(void)
 {
 	const u32 tseg = pci_read_config32(X58_IOH_SYSTEM, X58_TSEGCTRL);
 	const uintptr_t tseg_base = tseg & X58_TSEG_BASE_MASK;
@@ -202,7 +122,7 @@ static bool validate_trained_memory(void)
 	    tseg_encoding > 4 || tseg_base < MINIT_TEST_BASE + 4 * KiB ||
 	    tseg_base >= tolm || tseg_size > tolm - tseg_base) {
 		printk(BIOS_ERR, "X58: MINIT left an invalid DRAM/TSEG map\n");
-		return false;
+		return X58_MINIT_ERROR_MEMORY_MAP;
 	}
 
 	for (unsigned int i = 0; i < MINIT_TEST_DWORDS; i++) {
@@ -216,48 +136,44 @@ static bool validate_trained_memory(void)
 
 		if (read32p(MINIT_TEST_BASE + i * sizeof(u32)) != expected) {
 			printk(BIOS_ERR, "X58: trained DRAM test failed at dword %u\n", i);
-			return false;
+			return X58_MINIT_ERROR_MEMORY_TEST;
 		}
 	}
 
 	memset((void *)MINIT_TEST_BASE, 0, MINIT_TEST_DWORDS * sizeof(u32));
-	return true;
+	return X58_MINIT_SUCCESS;
 }
 
-bool x58_run_minit(void)
+enum x58_minit_result x58_run_minit(void)
 {
 	typedef int (*minit_entry_t)(u8 *policy, u8 *context);
 	u8 policy[MINIT_POLICY_SIZE] __aligned(16);
-	u32 entry_rva;
-	size_t loaded;
+	u8 *entry;
 	int result;
 
-	loaded = cbfs_load(MINIT_CBFS_NAME, minit_image, sizeof(minit_image));
-	if (loaded != sizeof(minit_image)) {
-		printk(BIOS_ERR, "X58: %s has bad size %zu (expected %zu)\n",
-		       MINIT_CBFS_NAME, loaded, sizeof(minit_image));
-		return false;
-	}
-
-	if (!relocate_minit(&entry_rva)) {
-		printk(BIOS_ERR, "X58: invalid or unsupported MINIT PE image\n");
-		return false;
-	}
+	entry = x58_load_vendor_pe(MINIT_CBFS_NAME, MINIT_IMAGE_SIZE);
+	if (!entry)
+		return X58_MINIT_ERROR_IMAGE;
 
 	build_minit_policy(policy);
 	memset(minit_context, 0, sizeof(minit_context));
 	printk(BIOS_INFO, "X58: running MINIT at %p with context %p\n",
-	       &minit_image[entry_rva], minit_context);
+	       entry, minit_context);
 
-	result = ((minit_entry_t)&minit_image[entry_rva])(policy, minit_context);
+	result = ((minit_entry_t)entry)(policy, minit_context);
 	printk(BIOS_INFO,
 	       "X58: MINIT returned %d, policy status %u, context state %u/%u\n",
 	       result, policy[POLICY_BOOT_RESULT], minit_context[1],
 	       minit_context[2]);
 
-	if (result || minit_context[1] == 1 || minit_context[2] ||
-	    policy[POLICY_BOOT_RESULT])
-		return false;
+	if (result)
+		return X58_MINIT_ERROR_CALL;
+	if (minit_context[1] == 1)
+		return X58_MINIT_ERROR_CONTEXT_STATE;
+	if (minit_context[2])
+		return X58_MINIT_ERROR_CONTEXT_DETAIL;
+	if (policy[POLICY_BOOT_RESULT])
+		return X58_MINIT_ERROR_POLICY;
 
-	return validate_trained_memory();
+	return X58_MINIT_SUCCESS;
 }

@@ -17,6 +17,7 @@
 
 #include "../../../mainboard/asus/p6t_se/beep.h"
 #include "../../../mainboard/asus/p6t_se/early_init.h"
+#include "csi.h"
 #include "minit_internal.h"
 #include "minit.h"
 #include "raminit.h"
@@ -448,6 +449,8 @@ static void p6t_se_private_imc_probe(void)
 
 void mainboard_romstage_entry(void)
 {
+	enum x58_csi_result csi_result;
+	enum x58_minit_result minit_result;
 	spd_ddr3_raw_data spd;
 	struct dimm_attr_ddr3_st dimm;
 	struct x58_raminit_state ctrl = { 0 };
@@ -568,6 +571,15 @@ void mainboard_romstage_entry(void)
 
 	p6t_se_private_imc_probe();
 
+	/* The stock module initializes the CSI/QPI fabric before running MINIT. */
+	csi_result = x58_run_csi();
+	if (csi_result != X58_CSI_SUCCESS) {
+		post_code(0xe9);
+		p6t_se_beep_error_detail(P6T_SE_BEEP_ERR_CSI, csi_result);
+		die("P6T SE/X58: CSI/QPI initialization failed\n");
+	}
+	p6t_se_beep(11);
+
 	/*
 	 * MINIT consumes the DIMM geometry and rank maps through private IMC
 	 * PCI functions.
@@ -578,10 +590,22 @@ void mainboard_romstage_entry(void)
 		die("P6T SE/X58: IMC topology register verification failed\n");
 	}
 
-	if (!x58_run_minit()) {
+	minit_result = x58_run_minit();
+	if (minit_result != X58_MINIT_SUCCESS) {
 		post_code(0xec);
-		p6t_se_beep_error(P6T_SE_BEEP_ERR_MINIT);
+		p6t_se_beep_error_detail(P6T_SE_BEEP_ERR_MINIT,
+					 minit_result);
 		die("P6T SE/X58: MINIT DDR3 training failed\n");
+	}
+
+	/* Module 55 performs this board cleanup before touching trained DRAM. */
+	p6t_se_finalize_minit_gpio();
+	minit_result = x58_validate_trained_memory();
+	if (minit_result != X58_MINIT_SUCCESS) {
+		post_code(0xec);
+		p6t_se_beep_error_detail(P6T_SE_BEEP_ERR_MINIT,
+					 minit_result);
+		die("P6T SE/X58: trained DDR3 validation failed\n");
 	}
 	p6t_se_beep(9);
 

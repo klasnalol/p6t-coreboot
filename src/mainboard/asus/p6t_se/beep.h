@@ -12,9 +12,12 @@ enum p6t_se_beep_error {
 	P6T_SE_BEEP_ERR_TOPOLOGY = 6,
 	P6T_SE_BEEP_ERR_PCIE_ROOT_PORT = 7,
 	P6T_SE_BEEP_ERR_MINIT = 8,
+	P6T_SE_BEEP_ERR_CSI = 9,
 };
 
 void p6t_se_beep(unsigned int count);
 void p6t_se_beep_error(enum p6t_se_beep_error error);
+void p6t_se_beep_error_detail(enum p6t_se_beep_error error,
+			      unsigned int detail);
 
 #endif

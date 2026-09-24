@@ -6,6 +6,7 @@
 #include <arch/io.h>
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <post.h>
 #include <types.h>
@@ -26,6 +27,9 @@
 #define GP_IO_USE_SEL2		0x30
 #define GP_IO_SEL2		0x34
 #define GP_LVL2			0x38
+
+#define X58_PRIVATE_GPIO_STATUS(devfn) \
+	(CONFIG_ECAM_MMCONF_BASE_ADDRESS + ((uintptr_t)(devfn) << 12) + 0x82c)
 
 void p6t_se_configure_stock_bases(void)
 {
@@ -89,6 +93,37 @@ void p6t_se_select_spd_mux(u8 spd_address)
 	}
 
 	outw(level | select, P6T_GPIOBASE + GP_LVL2);
+}
+
+static void configure_minit_gpio(unsigned int gpio, bool level)
+{
+	const u16 bank = gpio < 32 ? P6T_GPIOBASE : P6T_GPIOBASE + 0x30;
+	const u32 mask = BIT(gpio & 31);
+	const u16 level_reg = bank == P6T_GPIOBASE ? bank + 0x0c : bank + 0x08;
+
+	outl(inl(bank) | mask, bank);
+	outl(inl(bank + 4) & ~mask, bank + 4);
+	if (bank == P6T_GPIOBASE) {
+		outl(inl(bank + 0x18) & ~mask, bank + 0x18);
+		outl(inl(bank + 0x1c) & ~mask, bank + 0x1c);
+	}
+	outl(level ? inl(level_reg) | mask : inl(level_reg) & ~mask,
+	     level_reg);
+}
+
+void p6t_se_finalize_minit_gpio(void)
+{
+	u8 levels;
+
+	/* Exact conditional cleanup immediately following MINIT in module 55. */
+	if (!(read8p(X58_PRIVATE_GPIO_STATUS(0x68)) & BIT(7)) &&
+	    !(read8p(X58_PRIVATE_GPIO_STATUS(0x69)) & BIT(7)))
+		return;
+
+	levels = pci_read_config8(PCI_DEV(0, 0x14, 2), 0xd0) & 3;
+	configure_minit_gpio(12, levels & BIT(0));
+	configure_minit_gpio(8, levels & BIT(1));
+	configure_minit_gpio(56, true);
 }
 
 void bootblock_mainboard_early_init(void)
