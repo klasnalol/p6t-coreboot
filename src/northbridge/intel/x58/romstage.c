@@ -388,7 +388,6 @@ static void p6t_se_private_imc_probe(void)
 	}
 
 	post_code(0xe6);
-	p6t_se_beep(6);
 
 	/* Exact MINIT mapping: ctx+0xb6 -> global descriptor 0x15. */
 	idx = x58_minit_cfg_index(0x0b6);
@@ -427,7 +426,6 @@ static void p6t_se_private_imc_probe(void)
 	       idx, d->bit, d->span, value);
 
 	post_code(0xe7);
-	p6t_se_beep(7);
 
 	/* ctx+0x11e is the first B8 nine-field channel descriptor: 0x239. */
 	idx = x58_minit_cfg_index(0x11e);
@@ -442,7 +440,6 @@ static void p6t_se_private_imc_probe(void)
 	       idx, d->bit, d->span, value);
 
 	post_code(0xe8);
-	p6t_se_beep(8);
 	printk(BIOS_EMERG,
 	       "P6T SE/X58: MINIT private-IMC descriptor/transport milestone passed\n");
 }
@@ -450,6 +447,7 @@ static void p6t_se_private_imc_probe(void)
 void mainboard_romstage_entry(void)
 {
 	enum x58_csi_result csi_result;
+	struct x58_csi_status csi_status;
 	enum x58_minit_result minit_result;
 	spd_ddr3_raw_data spd;
 	struct dimm_attr_ddr3_st dimm;
@@ -479,16 +477,9 @@ void mainboard_romstage_entry(void)
 
 	printk(BIOS_INFO, "P6T SE/X58: SMBus enabled at %p\n", (void *)base);
 
-	/*
-	 * Existing diagnostic:
-	 * 2 beeps = SMBus controller initialization completed.
-	 */
 	post_code(0xe2);
-	p6t_se_beep(2);
 
-	/* 5 beeps = begin the stock-derived six-slot SPD scan. */
 	post_code(0xe5);
-	p6t_se_beep(5);
 	mb_get_spd_map(spd_map);
 
 	for (unsigned int slot = 0; slot < SPD_SLOT_COUNT; slot++) {
@@ -529,11 +520,7 @@ void mainboard_romstage_entry(void)
 		}
 	}
 
-	/*
-	 * 3 beeps = the complete slot scan finished.
-	 */
 	post_code(0xe3);
-	p6t_se_beep(3);
 
 	printk(BIOS_INFO, "P6T SE: %u populated slot(s), %u valid DDR3 SPD(s)\n",
 	       populated, valid);
@@ -556,29 +543,25 @@ void mainboard_romstage_entry(void)
 	}
 	x58_raminit_report(&ctrl);
 
-	/*
-	 * 4 beeps = discovery success:
-	 *
-	 *   stock PM/GPIO bases configured
-	 *   all three stock SPD mux routes exercised
-	 *   ICH10 SMBus operational
-	 *   at least one complete DDR3 SPD has a valid CRC
-	 */
 	post_code(0xe4);
-	p6t_se_beep(4);
 
 	printk(BIOS_INFO, "P6T SE/X58: stock-derived SPD discovery passed\n");
 
 	p6t_se_private_imc_probe();
+	/* Two short tones: SPD and private IMC reads passed; CSI is next. */
+	p6t_se_beep(2);
 
 	/* The stock module initializes the CSI/QPI fabric before running MINIT. */
-	csi_result = x58_run_csi();
+	csi_result = x58_run_csi(&csi_status);
 	if (csi_result != X58_CSI_SUCCESS) {
 		post_code(0xe9);
-		p6t_se_beep_error_detail(P6T_SE_BEEP_ERR_CSI, csi_result);
+		p6t_se_beep_csi_failure(csi_result, csi_status.status_class,
+					csi_status.detail, csi_status.flags,
+					csi_status.progress);
 		die("P6T SE/X58: CSI/QPI initialization failed\n");
 	}
-	p6t_se_beep(11);
+	/* Three short tones: CSI/QPI completed. */
+	p6t_se_beep(3);
 
 	/*
 	 * MINIT consumes the DIMM geometry and rank maps through private IMC
@@ -607,14 +590,16 @@ void mainboard_romstage_entry(void)
 					 minit_result);
 		die("P6T SE/X58: trained DDR3 validation failed\n");
 	}
-	p6t_se_beep(9);
+	/* Four short tones: trained DRAM passed a read/write test. */
+	p6t_se_beep(4);
 
 	if (!p6t_se_probe_x58_pcie()) {
 		post_code(0xeb);
 		p6t_se_beep_error(P6T_SE_BEEP_ERR_PCIE_ROOT_PORT);
 		die("P6T SE/X58: expected PCIe root port is not visible\n");
 	}
-	p6t_se_beep(10);
+	/* Five short tones: root-port setup completed. */
+	p6t_se_beep(5);
 
 	printk(BIOS_INFO, "P6T SE/X58: DDR3 and PCIe initialization complete\n");
 	romstage_handoff_init(false);

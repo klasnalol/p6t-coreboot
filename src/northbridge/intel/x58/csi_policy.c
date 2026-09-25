@@ -122,6 +122,13 @@ void x58_apply_csi_cmos_policy(u8 policy[X58_CSI_POLICY_SIZE], u8 revision,
 
 	if (cpu_signature == 0x6a0)
 		policy[6] = 0;
+	/*
+	 * The stock CMOS speed request can disagree with the IOH's requested
+	 * CSI/QPI speed. The vendor DLL treats 0x20 as auto and then selects
+	 * the IOH-supported speed, avoiding its fatal speed-mismatch path.
+	 */
+	if (policy[6] && policy[7] >= 1 && policy[7] <= 3)
+		policy[7] = X58_CSI_SPEED_AUTO;
 	if (revision < 0x10 && !policy[7])
 		policy[7] = 1;
 }

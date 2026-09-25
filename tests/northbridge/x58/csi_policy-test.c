@@ -89,6 +89,29 @@ static void test_cmos_skip_and_old_revision(void **state)
 	assert_int_equal(policy[0x01d], 0);
 }
 
+static void test_manual_qpi_speed_uses_auto(void **state)
+{
+	struct x58_csi_cmos_settings settings = {
+		.cmos_58 = 0,
+		.cmos_8e = 0,
+		/* The recorded CSI error reported requested speed code 3. */
+		.extended_80 = 0x07,
+	};
+	u8 policy[X58_CSI_POLICY_SIZE];
+
+	x58_build_csi_policy(policy, 0x13, 0xe0000000);
+	x58_apply_csi_cmos_policy(policy, 0x13, 0x6a4, &settings);
+	assert_int_equal(policy[6], 1);
+	assert_int_equal(policy[7], X58_CSI_SPEED_AUTO);
+
+	/* The validated CMOS speed override must not force the same mismatch. */
+	settings.extended_88 = 3;
+	settings.extended_89 = 0xfc;
+	x58_build_csi_policy(policy, 0x13, 0xe0000000);
+	x58_apply_csi_cmos_policy(policy, 0x13, 0x6a4, &settings);
+	assert_int_equal(policy[7], X58_CSI_SPEED_AUTO);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -96,6 +119,7 @@ int main(void)
 		cmocka_unit_test(test_older_ioh_policy),
 		cmocka_unit_test(test_cmos_override_and_cpu_signature),
 		cmocka_unit_test(test_cmos_skip_and_old_revision),
+		cmocka_unit_test(test_manual_qpi_speed_uses_auto),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

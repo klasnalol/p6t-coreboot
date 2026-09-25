@@ -64,7 +64,7 @@ static void read_csi_cmos_settings(struct x58_csi_cmos_settings *settings)
 	settings->extended_82 = read_extended_cmos(0x82);
 }
 
-enum x58_csi_result x58_run_csi(void)
+enum x58_csi_result x58_run_csi(struct x58_csi_status *status)
 {
 	typedef void (*csi_entry_t)(u8 *policy, u8 *mirror);
 	u8 policy[X58_CSI_POLICY_SIZE] __aligned(16);
@@ -74,6 +74,7 @@ enum x58_csi_result x58_run_csi(void)
 	u32 progress;
 	u32 flags;
 
+	*status = (struct x58_csi_status){ 0 };
 	entry = x58_load_vendor_pe(CSI_CBFS_NAME, CSI_IMAGE_SIZE);
 	if (!entry)
 		return X58_CSI_ERROR_IMAGE;
@@ -89,6 +90,11 @@ enum x58_csi_result x58_run_csi(void)
 
 	flags = read_le32(&policy[CSI_STATUS_FLAGS]);
 	progress = pci_read_config32(PCI_DEV(0, 0x14, 1), 0x9c);
+	status->flags = flags;
+	status->status_class = policy[CSI_STATUS_CLASS];
+	status->detail = policy[CSI_STATUS_DETAIL];
+	status->speed = policy[CSI_NEGOTIATED_SPEED];
+	status->progress = ((progress >> 24) << 8) | ((progress >> 16) & 0xff);
 	printk(BIOS_INFO,
 	       "X58: CSI flags=%08x class=%u detail=%u speed=%u progress=%08x\n",
 	       flags, policy[CSI_STATUS_CLASS], policy[CSI_STATUS_DETAIL],

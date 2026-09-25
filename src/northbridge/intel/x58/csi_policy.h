@@ -6,6 +6,7 @@
 #include <types.h>
 
 #define X58_CSI_POLICY_SIZE 0x450
+#define X58_CSI_SPEED_AUTO 0x20
 
 struct x58_csi_cmos_settings {
 	u8 cmos_58;
