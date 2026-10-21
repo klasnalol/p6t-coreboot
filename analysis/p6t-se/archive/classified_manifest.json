@@ -1,0 +1,1128 @@
+{
+  "schema": "p6t-module-archive-inventory-v1",
+  "archive": "/home/klasnalol/Downloads/Archive.tar.gz",
+  "archive_sha256": "b5ca0dc5276199c6f5498d1105d0a0a75c169fc5ae0324ead135d594135a4dae",
+  "archive_size": 1082865,
+  "output": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules",
+  "members": [
+    {
+      "name": "0c",
+      "size": 8,
+      "tar_uncompressed_header_offset": 0,
+      "tar_uncompressed_data_offset": 1536,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/0c",
+      "sha256": "9fd41058dcb11cd8e6b9a6a6d4479e3f7cd1ac912d189e39b528271daa03b76e",
+      "prefix_hex": "4131323739303031",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "0e logo",
+      "size": 308280,
+      "tar_uncompressed_header_offset": 2048,
+      "tar_uncompressed_data_offset": 3584,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/0e logo",
+      "sha256": "368c3318b2418828be41142d37f20db17c2127ca4bd7297c8538354b0217bed9",
+      "prefix_hex": "424d38b4040000000000360400002800000080020000e0010000010008000000",
+      "signatures": [
+        {
+          "offset": 0,
+          "observation": "BMP signature"
+        }
+      ],
+      "structured_formats": {
+        "bmp": {
+          "file_size": 308280,
+          "pixel_offset": 1078,
+          "dib_size": 40,
+          "width": 640,
+          "height": 480,
+          "bits_per_pixel": 8
+        }
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "1a smal logo",
+      "size": 9890,
+      "tar_uncompressed_header_offset": 312320,
+      "tar_uncompressed_data_offset": 313856,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/1a smal logo",
+      "sha256": "1184e70457bebb57824f0a002db41f367f71e7487805745dd427bd83b0177b72",
+      "prefix_hex": "4752465801010800000000004e000000000002014c0000800000100000494d41",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "1b",
+      "size": 469977,
+      "tar_uncompressed_header_offset": 324096,
+      "tar_uncompressed_data_offset": 325632,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/1b",
+      "sha256": "6d18d66f10f866d7a5ba9d7f9396d602064c9c319d24b804b3f5264b1a12c042",
+      "prefix_hex": "4400840610bb0500aa15008040f302000100008000000f000000018000000400",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "1e",
+      "size": 20428,
+      "tar_uncompressed_header_offset": 795648,
+      "tar_uncompressed_data_offset": 797184,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/1e",
+      "sha256": "309c35bd9db35eac57f8b295195378f339333bdd4ae6d1364900c39c52deeed9",
+      "prefix_hex": "244f534205841a000000000000000000424d841a0000000000007c0000002800",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "2b",
+      "size": 1360,
+      "tar_uncompressed_header_offset": 817664,
+      "tar_uncompressed_data_offset": 819200,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/2b",
+      "sha256": "093e02ff1b0ab46e84157aa535450807e3e2eb565ff550bd863386ace00b6e2c",
+      "prefix_hex": "0000000028000000000018000000000008000000000000000000000000000000",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "04",
+      "size": 35891,
+      "tar_uncompressed_header_offset": 820736,
+      "tar_uncompressed_data_offset": 822272,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/04",
+      "sha256": "2c8807f7b171d6de447944f0f11014d997d48cfbceae1408aac4bda116a9a565",
+      "prefix_hex": "e951000000000000000000000000000000000000000000455a02617630322e36",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "06 smbios",
+      "size": 3072,
+      "tar_uncompressed_header_offset": 858624,
+      "tar_uncompressed_data_offset": 860160,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/06 smbios",
+      "sha256": "8f552bbd24361b0bd3c985f890303046341ecb927a0c734ba813cb763a76d508",
+      "prefix_hex": "5f414d49444d495f0302010100960b0000180000010200f0031f90de8b7f0100",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "08",
+      "size": 77832,
+      "tar_uncompressed_header_offset": 863232,
+      "tar_uncompressed_data_offset": 864768,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/08",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "prefix_hex": "010000000600000009202212c1060200497ce2450100000003000000d0170000",
+      "signatures": [],
+      "structured_formats": {
+        "intel_microcode_records": [
+          {
+            "offset": 0,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 6,
+            "date_bcd": 304226313,
+            "processor_signature": 132801,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3d007033139c99ad187558fced197ff8e65cb02111cfe3326656e3d9e82801d2"
+          },
+          {
+            "offset": 6144,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901782,
+            "date_bcd": 136323081,
+            "processor_signature": 132800,
+            "platform_flags": 19,
+            "checksum_mod2pow32": 0,
+            "sha256": "24d125abf2710136cc3c121cc59a08176fde373419e4b64030e1820e2db90c6b"
+          },
+          {
+            "offset": 14336,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 15,
+            "date_bcd": 35659785,
+            "processor_signature": 67237,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "43d33f7866b29112ac5767f507416993a1a93d26583a4495bd54a24316efd4d4"
+          },
+          {
+            "offset": 20480,
+            "size": 10240,
+            "header_version": 1,
+            "revision": 16,
+            "date_bcd": 35659785,
+            "processor_signature": 67236,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "359c2a41b3df036c59d9f3024fd7002b9869e58e07d3d87160e68606529b2c55"
+          },
+          {
+            "offset": 30720,
+            "size": 9216,
+            "header_version": 1,
+            "revision": 10,
+            "date_bcd": 152641544,
+            "processor_signature": 67236,
+            "platform_flags": 2,
+            "checksum_mod2pow32": 0,
+            "sha256": "e153d0bb0ce1e10f1b83abf46c259f3662b2c87595c31d5ea6d809b0bae95acb"
+          },
+          {
+            "offset": 40960,
+            "size": 11264,
+            "header_version": 1,
+            "revision": 4294901785,
+            "date_bcd": 118759432,
+            "processor_signature": 67234,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "cfa222aad7a0d7baa9b10322085e0b0ba0559d7cc722f4621ffead9751c3ba36"
+          },
+          {
+            "offset": 53248,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901771,
+            "date_bcd": 35659784,
+            "processor_signature": 67233,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "136196c4fc2c9677d1bc6bd4b002912df5918cb56dc46e09100e7d5f9daed600"
+          },
+          {
+            "offset": 61440,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901786,
+            "date_bcd": 287842311,
+            "processor_signature": 67232,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "d68a857cb037e40e2e38a45e64da0da76191dee533811579dcbc7da01e3b8f31"
+          },
+          {
+            "offset": 69632,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 21,
+            "date_bcd": 136716305,
+            "processor_signature": 132802,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3b81c0af9e211bf979d7e461046150b3635bf7cd04b3dcdfcb889842126f14e2"
+          }
+        ]
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "10",
+      "size": 50055,
+      "tar_uncompressed_header_offset": 943104,
+      "tar_uncompressed_data_offset": 944640,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/10",
+      "sha256": "e8a604fa95a515527c8f2bdf88ccf86b3e3fd128a7accfaa2486ff43b006bec4",
+      "prefix_hex": "4453445487c3000001aa413132373900413132373930303101000000494e544c",
+      "signatures": [],
+      "structured_formats": {
+        "acpi": {
+          "signature": "DSDT",
+          "table_size": 50055,
+          "revision": 1,
+          "checksum_mod256": 0,
+          "oem_id": "A1279\u0000",
+          "oem_table_id": "A1279001"
+        }
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "11",
+      "size": 77832,
+      "tar_uncompressed_header_offset": 994816,
+      "tar_uncompressed_data_offset": 996352,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/11",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "prefix_hex": "010000000600000009202212c1060200497ce2450100000003000000d0170000",
+      "signatures": [],
+      "structured_formats": {
+        "intel_microcode_records": [
+          {
+            "offset": 0,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 6,
+            "date_bcd": 304226313,
+            "processor_signature": 132801,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3d007033139c99ad187558fced197ff8e65cb02111cfe3326656e3d9e82801d2"
+          },
+          {
+            "offset": 6144,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901782,
+            "date_bcd": 136323081,
+            "processor_signature": 132800,
+            "platform_flags": 19,
+            "checksum_mod2pow32": 0,
+            "sha256": "24d125abf2710136cc3c121cc59a08176fde373419e4b64030e1820e2db90c6b"
+          },
+          {
+            "offset": 14336,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 15,
+            "date_bcd": 35659785,
+            "processor_signature": 67237,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "43d33f7866b29112ac5767f507416993a1a93d26583a4495bd54a24316efd4d4"
+          },
+          {
+            "offset": 20480,
+            "size": 10240,
+            "header_version": 1,
+            "revision": 16,
+            "date_bcd": 35659785,
+            "processor_signature": 67236,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "359c2a41b3df036c59d9f3024fd7002b9869e58e07d3d87160e68606529b2c55"
+          },
+          {
+            "offset": 30720,
+            "size": 9216,
+            "header_version": 1,
+            "revision": 10,
+            "date_bcd": 152641544,
+            "processor_signature": 67236,
+            "platform_flags": 2,
+            "checksum_mod2pow32": 0,
+            "sha256": "e153d0bb0ce1e10f1b83abf46c259f3662b2c87595c31d5ea6d809b0bae95acb"
+          },
+          {
+            "offset": 40960,
+            "size": 11264,
+            "header_version": 1,
+            "revision": 4294901785,
+            "date_bcd": 118759432,
+            "processor_signature": 67234,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "cfa222aad7a0d7baa9b10322085e0b0ba0559d7cc722f4621ffead9751c3ba36"
+          },
+          {
+            "offset": 53248,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901771,
+            "date_bcd": 35659784,
+            "processor_signature": 67233,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "136196c4fc2c9677d1bc6bd4b002912df5918cb56dc46e09100e7d5f9daed600"
+          },
+          {
+            "offset": 61440,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901786,
+            "date_bcd": 287842311,
+            "processor_signature": 67232,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "d68a857cb037e40e2e38a45e64da0da76191dee533811579dcbc7da01e3b8f31"
+          },
+          {
+            "offset": 69632,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 21,
+            "date_bcd": 136716305,
+            "processor_signature": 132802,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3b81c0af9e211bf979d7e461046150b3635bf7cd04b3dcdfcb889842126f14e2"
+          }
+        ]
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "18",
+      "size": 16965,
+      "tar_uncompressed_header_offset": 1074688,
+      "tar_uncompressed_data_offset": 1076224,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/18",
+      "sha256": "72132e7190714a8a0b860406bbad46ff25f4b77a935a34c26692918830185820",
+      "prefix_hex": "558bec83c50666536651665666579c061efc8b5e0081fb3300732b83fb217505",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "19",
+      "size": 4868,
+      "tar_uncompressed_header_offset": 1093632,
+      "tar_uncompressed_data_offset": 1095168,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/19",
+      "sha256": "2add726e9b0e27ec382187582f563cd33f619442fa14c13b59f3c749ddc6431d",
+      "prefix_hex": "544e4f4600000000000000000000000000000000000000000000007c82aa8282",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "20",
+      "size": 65536,
+      "tar_uncompressed_header_offset": 1100288,
+      "tar_uncompressed_data_offset": 1101824,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/20",
+      "sha256": "8b89f27f3a1f1d67e664a3fc44b4c6f158af0703cc06b833e87ad36ee7f36bae",
+      "prefix_hex": "55aa80e9fa560000000000000000000000000000000000f08c007c01496e7465",
+      "signatures": [
+        {
+          "offset": 0,
+          "observation": "55 AA prefix"
+        }
+      ],
+      "structured_formats": {
+        "pci_option_rom": {
+          "header_size": 65536,
+          "pcir_offset": 140,
+          "vendor_id": 32902,
+          "device_id": 10274,
+          "pcir_image_size": 65536,
+          "code_type": 0,
+          "last_image": true,
+          "checksum_mod256": 0
+        }
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "20 1",
+      "size": 43008,
+      "tar_uncompressed_header_offset": 1167360,
+      "tar_uncompressed_data_offset": 1168896,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/20 1",
+      "sha256": "28e33ccc39cd213426c7f35c0351ac757ae4d3d95db005726ed8c5cb435abdb8",
+      "prefix_hex": "55aa54e85f1fcb0a6d030000000000000000000000002000400060002e8bc090",
+      "signatures": [
+        {
+          "offset": 0,
+          "observation": "55 AA prefix"
+        }
+      ],
+      "structured_formats": {
+        "pci_option_rom": {
+          "header_size": 43008,
+          "pcir_offset": 64,
+          "vendor_id": 4332,
+          "device_id": 33128,
+          "pcir_image_size": 43008,
+          "code_type": 0,
+          "last_image": true,
+          "checksum_mod256": 0
+        }
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "20 2",
+      "size": 32768,
+      "tar_uncompressed_header_offset": 1211904,
+      "tar_uncompressed_data_offset": 1213440,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/20 2",
+      "sha256": "46e54a57ce9121f22188356915f0268316db0ea6a76183a3b44ad79718a99860",
+      "prefix_hex": "55aa40e8ff31cb00000000000000000000000000000000002000400000000000",
+      "signatures": [
+        {
+          "offset": 0,
+          "observation": "55 AA prefix"
+        }
+      ],
+      "structured_formats": {
+        "pci_option_rom": {
+          "header_size": 32768,
+          "pcir_offset": 32,
+          "vendor_id": 6523,
+          "device_id": 9059,
+          "pcir_image_size": 32768,
+          "code_type": 0,
+          "last_image": true,
+          "checksum_mod256": 0
+        }
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21",
+      "size": 58079,
+      "tar_uncompressed_header_offset": 1246208,
+      "tar_uncompressed_data_offset": 1247744,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21",
+      "sha256": "cc2381e1154634ded28e309742c116e8ea927f202812f1643bf2f30d877a7fe9",
+      "prefix_hex": "474e414c3542020018000000ffff00000f9800006e0e0000160d5f0d680d860d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21 1",
+      "size": 58112,
+      "tar_uncompressed_header_offset": 1306112,
+      "tar_uncompressed_data_offset": 1307648,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21 1",
+      "sha256": "2bb6d637025ed91e0b7150c7c8f853309ffcac0280427c31e391bdbb59a7f98f",
+      "prefix_hex": "474e414c4247020018000000ffff000098970000640e0000160d5b0d640d7b0d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21 2",
+      "size": 62735,
+      "tar_uncompressed_header_offset": 1366016,
+      "tar_uncompressed_data_offset": 1367552,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21 2",
+      "sha256": "8a2c92f36c8a8fd87e6644cd7212033e16c137059ea11b26e570a59d283687cd",
+      "prefix_hex": "474e414c504a0300180000001bae00009bb70000100f0000160d7b0d880d960d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21 3",
+      "size": 51118,
+      "tar_uncompressed_header_offset": 1430528,
+      "tar_uncompressed_data_offset": 1432064,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21 3",
+      "sha256": "bb6adbb8f6b48ecb9c5a9941077c2effc8fc184d128fd97d654ba4628ce22400",
+      "prefix_hex": "474e414c5246000018000000ffff0000ffff0000a50f0000160dbc0dd00de30d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21 4",
+      "size": 47417,
+      "tar_uncompressed_header_offset": 1483264,
+      "tar_uncompressed_data_offset": 1484800,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21 4",
+      "sha256": "fa8e89ee4cc2eb482473a8e25fb67b5aa26d0e4bdbec1194d246c1995674fef8",
+      "prefix_hex": "474e414c4544000018000000ffff0000ffff0000210f0000160d8f0da10db00d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "21 5",
+      "size": 44464,
+      "tar_uncompressed_header_offset": 1532416,
+      "tar_uncompressed_data_offset": 1533952,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/21 5",
+      "sha256": "2e7cfc033210789c1abc236d6af0445e88f8f52cb202d31c4b46a700c226480f",
+      "prefix_hex": "474e414c5355040018000000ffff0000ffff0000e60e0000160d780d860d930d",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "30",
+      "size": 77832,
+      "tar_uncompressed_header_offset": 1578496,
+      "tar_uncompressed_data_offset": 1580032,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/30",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "prefix_hex": "010000000600000009202212c1060200497ce2450100000003000000d0170000",
+      "signatures": [],
+      "structured_formats": {
+        "intel_microcode_records": [
+          {
+            "offset": 0,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 6,
+            "date_bcd": 304226313,
+            "processor_signature": 132801,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3d007033139c99ad187558fced197ff8e65cb02111cfe3326656e3d9e82801d2"
+          },
+          {
+            "offset": 6144,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901782,
+            "date_bcd": 136323081,
+            "processor_signature": 132800,
+            "platform_flags": 19,
+            "checksum_mod2pow32": 0,
+            "sha256": "24d125abf2710136cc3c121cc59a08176fde373419e4b64030e1820e2db90c6b"
+          },
+          {
+            "offset": 14336,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 15,
+            "date_bcd": 35659785,
+            "processor_signature": 67237,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "43d33f7866b29112ac5767f507416993a1a93d26583a4495bd54a24316efd4d4"
+          },
+          {
+            "offset": 20480,
+            "size": 10240,
+            "header_version": 1,
+            "revision": 16,
+            "date_bcd": 35659785,
+            "processor_signature": 67236,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "359c2a41b3df036c59d9f3024fd7002b9869e58e07d3d87160e68606529b2c55"
+          },
+          {
+            "offset": 30720,
+            "size": 9216,
+            "header_version": 1,
+            "revision": 10,
+            "date_bcd": 152641544,
+            "processor_signature": 67236,
+            "platform_flags": 2,
+            "checksum_mod2pow32": 0,
+            "sha256": "e153d0bb0ce1e10f1b83abf46c259f3662b2c87595c31d5ea6d809b0bae95acb"
+          },
+          {
+            "offset": 40960,
+            "size": 11264,
+            "header_version": 1,
+            "revision": 4294901785,
+            "date_bcd": 118759432,
+            "processor_signature": 67234,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "cfa222aad7a0d7baa9b10322085e0b0ba0559d7cc722f4621ffead9751c3ba36"
+          },
+          {
+            "offset": 53248,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901771,
+            "date_bcd": 35659784,
+            "processor_signature": 67233,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "136196c4fc2c9677d1bc6bd4b002912df5918cb56dc46e09100e7d5f9daed600"
+          },
+          {
+            "offset": 61440,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901786,
+            "date_bcd": 287842311,
+            "processor_signature": 67232,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "d68a857cb037e40e2e38a45e64da0da76191dee533811579dcbc7da01e3b8f31"
+          },
+          {
+            "offset": 69632,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 21,
+            "date_bcd": 136716305,
+            "processor_signature": 132802,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3b81c0af9e211bf979d7e461046150b3635bf7cd04b3dcdfcb889842126f14e2"
+          }
+        ]
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "55",
+      "size": 190740,
+      "tar_uncompressed_header_offset": 1658368,
+      "tar_uncompressed_data_offset": 1659904,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/55",
+      "sha256": "23d6f3520db4755db3af42c958d6b22c88d7166375c3d7a92ab3c4b4e41b8d64",
+      "prefix_hex": "780000000800380040008bff3700000000008bff000000000000000000000000",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [
+        {
+          "offset": 7572,
+          "file_extent": 122656,
+          "sha256_of_bounded_extent": "a17eee641ab0955f6e4848ac95b761ba94c87b2c4be36c3a150d51ee856f0b6c",
+          "machine": 332,
+          "optional_magic": 267,
+          "entry_rva": 544,
+          "image_size": 122656,
+          "headers_size": 544,
+          "export_name": null,
+          "sections": [
+            {
+              "name": ".text",
+              "rva": 544,
+              "virtual_size": 103127,
+              "raw_offset": 544,
+              "raw_size": 103136,
+              "characteristics": 1610612768
+            },
+            {
+              "name": ".data",
+              "rva": 103680,
+              "virtual_size": 18381,
+              "raw_offset": 103680,
+              "raw_size": 18400,
+              "characteristics": 3221225536
+            },
+            {
+              "name": ".reloc",
+              "rva": 122080,
+              "virtual_size": 564,
+              "raw_offset": 122080,
+              "raw_size": 576,
+              "characteristics": 1107296320
+            }
+          ]
+        },
+        {
+          "offset": 159156,
+          "file_extent": 31584,
+          "sha256_of_bounded_extent": "b0f97e3f8ae49a01bc1d5f91fd0afe2e2dba97965d4d55c6bf94641bacc8e648",
+          "machine": 332,
+          "optional_magic": 267,
+          "entry_rva": 544,
+          "image_size": 31584,
+          "headers_size": 544,
+          "export_name": null,
+          "sections": [
+            {
+              "name": ".text",
+              "rva": 544,
+              "virtual_size": 30627,
+              "raw_offset": 544,
+              "raw_size": 30656,
+              "characteristics": 1610612768
+            },
+            {
+              "name": ".data",
+              "rva": 31200,
+              "virtual_size": 244,
+              "raw_offset": 31200,
+              "raw_size": 256,
+              "characteristics": 3221225536
+            },
+            {
+              "name": ".reloc",
+              "rva": 31456,
+              "virtual_size": 116,
+              "raw_offset": 31456,
+              "raw_size": 128,
+              "characteristics": 1107296320
+            }
+          ]
+        }
+      ],
+      "exact_matches": [
+        {
+          "comparison_path": "/home/klasnalol/coreboot-p6tse/3rdparty/blobs/northbridge/intel/x58/CSI_INITDLL.dll",
+          "offset": 159156,
+          "size": 31584,
+          "sha256": "b0f97e3f8ae49a01bc1d5f91fd0afe2e2dba97965d4d55c6bf94641bacc8e648"
+        },
+        {
+          "comparison_path": "/home/klasnalol/coreboot-p6tse/3rdparty/blobs/northbridge/intel/x58/MINITDLL.dll",
+          "offset": 7572,
+          "size": 122656,
+          "sha256": "a17eee641ab0955f6e4848ac95b761ba94c87b2c4be36c3a150d51ee856f0b6c"
+        }
+      ]
+    },
+    {
+      "name": "80",
+      "size": 168,
+      "tar_uncompressed_header_offset": 1850880,
+      "tar_uncompressed_data_offset": 1852416,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/80",
+      "sha256": "dfc20ee7f5380cde9cc2322b36e8fd5d0d6486048b5ca9d436b7f6f432b555f3",
+      "prefix_hex": "070010020101031400200801e0ff000050ff000021002f0801e8ff0000ecff00",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "f2",
+      "size": 70709,
+      "tar_uncompressed_header_offset": 1852928,
+      "tar_uncompressed_data_offset": 1854464,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/f2",
+      "sha256": "1c0df17e67e73f720a2c4d0aae02404ff4f9be536e16e7b29dbce0868ece1ac3",
+      "prefix_hex": "eb3e455435140100000000000000100017410009000017410000000082240400",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "f5",
+      "size": 64388,
+      "tar_uncompressed_header_offset": 1925632,
+      "tar_uncompressed_data_offset": 1927168,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/f5",
+      "sha256": "d22b5b10d907271785f2b6280d9ea52adc1efa12883b205d76c5747d5e6e3e2e",
+      "prefix_hex": "4d5a84017e0002002000c803ffff401300020000000000003e0000000100fb50",
+      "signatures": [
+        {
+          "offset": 0,
+          "observation": "DOS MZ signature"
+        }
+      ],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "fa",
+      "size": 65536,
+      "tar_uncompressed_header_offset": 1991680,
+      "tar_uncompressed_data_offset": 1993216,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/fa",
+      "sha256": "82fa748daa435964c57a08d76ef2f4764dd8e5b7ac30aefaf8d3557e5cb85273",
+      "prefix_hex": "ffffffff010004020602100320010000120030000000000000000000ffffffff",
+      "signatures": [],
+      "structured_formats": {},
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "fc",
+      "size": 77832,
+      "tar_uncompressed_header_offset": 2058752,
+      "tar_uncompressed_data_offset": 2060288,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/fc",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "prefix_hex": "010000000600000009202212c1060200497ce2450100000003000000d0170000",
+      "signatures": [],
+      "structured_formats": {
+        "intel_microcode_records": [
+          {
+            "offset": 0,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 6,
+            "date_bcd": 304226313,
+            "processor_signature": 132801,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3d007033139c99ad187558fced197ff8e65cb02111cfe3326656e3d9e82801d2"
+          },
+          {
+            "offset": 6144,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901782,
+            "date_bcd": 136323081,
+            "processor_signature": 132800,
+            "platform_flags": 19,
+            "checksum_mod2pow32": 0,
+            "sha256": "24d125abf2710136cc3c121cc59a08176fde373419e4b64030e1820e2db90c6b"
+          },
+          {
+            "offset": 14336,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 15,
+            "date_bcd": 35659785,
+            "processor_signature": 67237,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "43d33f7866b29112ac5767f507416993a1a93d26583a4495bd54a24316efd4d4"
+          },
+          {
+            "offset": 20480,
+            "size": 10240,
+            "header_version": 1,
+            "revision": 16,
+            "date_bcd": 35659785,
+            "processor_signature": 67236,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "359c2a41b3df036c59d9f3024fd7002b9869e58e07d3d87160e68606529b2c55"
+          },
+          {
+            "offset": 30720,
+            "size": 9216,
+            "header_version": 1,
+            "revision": 10,
+            "date_bcd": 152641544,
+            "processor_signature": 67236,
+            "platform_flags": 2,
+            "checksum_mod2pow32": 0,
+            "sha256": "e153d0bb0ce1e10f1b83abf46c259f3662b2c87595c31d5ea6d809b0bae95acb"
+          },
+          {
+            "offset": 40960,
+            "size": 11264,
+            "header_version": 1,
+            "revision": 4294901785,
+            "date_bcd": 118759432,
+            "processor_signature": 67234,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "cfa222aad7a0d7baa9b10322085e0b0ba0559d7cc722f4621ffead9751c3ba36"
+          },
+          {
+            "offset": 53248,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901771,
+            "date_bcd": 35659784,
+            "processor_signature": 67233,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "136196c4fc2c9677d1bc6bd4b002912df5918cb56dc46e09100e7d5f9daed600"
+          },
+          {
+            "offset": 61440,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901786,
+            "date_bcd": 287842311,
+            "processor_signature": 67232,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "d68a857cb037e40e2e38a45e64da0da76191dee533811579dcbc7da01e3b8f31"
+          },
+          {
+            "offset": 69632,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 21,
+            "date_bcd": 136716305,
+            "processor_signature": 132802,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3b81c0af9e211bf979d7e461046150b3635bf7cd04b3dcdfcb889842126f14e2"
+          }
+        ]
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    },
+    {
+      "name": "fd",
+      "size": 77832,
+      "tar_uncompressed_header_offset": 2138624,
+      "tar_uncompressed_data_offset": 2140160,
+      "type": "file",
+      "extracted_path": "/home/klasnalol/coreboot-p6tse/build/p6t-original-modules/fd",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "prefix_hex": "010000000600000009202212c1060200497ce2450100000003000000d0170000",
+      "signatures": [],
+      "structured_formats": {
+        "intel_microcode_records": [
+          {
+            "offset": 0,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 6,
+            "date_bcd": 304226313,
+            "processor_signature": 132801,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3d007033139c99ad187558fced197ff8e65cb02111cfe3326656e3d9e82801d2"
+          },
+          {
+            "offset": 6144,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901782,
+            "date_bcd": 136323081,
+            "processor_signature": 132800,
+            "platform_flags": 19,
+            "checksum_mod2pow32": 0,
+            "sha256": "24d125abf2710136cc3c121cc59a08176fde373419e4b64030e1820e2db90c6b"
+          },
+          {
+            "offset": 14336,
+            "size": 6144,
+            "header_version": 1,
+            "revision": 15,
+            "date_bcd": 35659785,
+            "processor_signature": 67237,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "43d33f7866b29112ac5767f507416993a1a93d26583a4495bd54a24316efd4d4"
+          },
+          {
+            "offset": 20480,
+            "size": 10240,
+            "header_version": 1,
+            "revision": 16,
+            "date_bcd": 35659785,
+            "processor_signature": 67236,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "359c2a41b3df036c59d9f3024fd7002b9869e58e07d3d87160e68606529b2c55"
+          },
+          {
+            "offset": 30720,
+            "size": 9216,
+            "header_version": 1,
+            "revision": 10,
+            "date_bcd": 152641544,
+            "processor_signature": 67236,
+            "platform_flags": 2,
+            "checksum_mod2pow32": 0,
+            "sha256": "e153d0bb0ce1e10f1b83abf46c259f3662b2c87595c31d5ea6d809b0bae95acb"
+          },
+          {
+            "offset": 40960,
+            "size": 11264,
+            "header_version": 1,
+            "revision": 4294901785,
+            "date_bcd": 118759432,
+            "processor_signature": 67234,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "cfa222aad7a0d7baa9b10322085e0b0ba0559d7cc722f4621ffead9751c3ba36"
+          },
+          {
+            "offset": 53248,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901771,
+            "date_bcd": 35659784,
+            "processor_signature": 67233,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "136196c4fc2c9677d1bc6bd4b002912df5918cb56dc46e09100e7d5f9daed600"
+          },
+          {
+            "offset": 61440,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 4294901786,
+            "date_bcd": 287842311,
+            "processor_signature": 67232,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "d68a857cb037e40e2e38a45e64da0da76191dee533811579dcbc7da01e3b8f31"
+          },
+          {
+            "offset": 69632,
+            "size": 8192,
+            "header_version": 1,
+            "revision": 21,
+            "date_bcd": 136716305,
+            "processor_signature": 132802,
+            "platform_flags": 3,
+            "checksum_mod2pow32": 0,
+            "sha256": "3b81c0af9e211bf979d7e461046150b3635bf7cd04b3dcdfcb889842126f14e2"
+          }
+        ]
+      },
+      "embedded_pe": [],
+      "exact_matches": []
+    }
+  ],
+  "limitations": [
+    "Byte signatures and validated PE layout do not establish behavioral roles or equivalence.",
+    "PE file extent is the maximum validated header/section raw bound; trailing data is not included.",
+    "No code was executed, decompressed module format inferred, or function inventory recovered."
+  ],
+  "duplicate_content_groups": [
+    {
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "members": [
+        "08",
+        "11",
+        "30",
+        "fc",
+        "fd"
+      ]
+    }
+  ],
+  "counts": {
+    "members": 30,
+    "regular_files": 30,
+    "distinct_file_contents": 26,
+    "uncompressed_file_bytes": 2164732,
+    "validated_pe_images": 2,
+    "exact_comparison_matches": 2
+  }
+}

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -8,12 +9,12 @@
 #include <types.h>
 
 #include "minit.h"
+#include "minit_policy.h"
 #include "vendor_pe.h"
 
 #define MINIT_CBFS_NAME		"minit.bin"
 #define MINIT_IMAGE_SIZE	0x1df20
 #define MINIT_CONTEXT_SIZE	0x2af0
-#define MINIT_POLICY_SIZE	0xc4
 
 #define X58_IOH_SYSTEM		PCI_DEV(0, 0x14, 0)
 #define X58_TSEGCTRL		0xa8
@@ -27,82 +28,42 @@
 #define MINIT_TEST_BASE		(1 * MiB)
 #define MINIT_TEST_DWORDS	16
 
-/* Reconstructed module-55 policy offsets. */
-#define POLICY_IOH_BUS		0x00
-#define POLICY_BOOT_MODE	0x01
-#define POLICY_MEMORY_RATIO	0x02
-#define POLICY_SOCKET_COUNT	0x03
-#define POLICY_QPI_MODE		0x04
-#define POLICY_CHANNEL_COUNT	0x05
-#define POLICY_DIMMS_PER_CHANNEL 0x06
-#define POLICY_RANK_LIMIT	0x07
-#define POLICY_ECC_MODE		0x08
 #define POLICY_BOOT_RESULT	0x0a
-#define POLICY_REFRESH_LIMIT	0x14
-#define POLICY_MMCONFIG_BASE	0x20
-#define POLICY_FEATURES		0x24
-#define POLICY_TRAINING_DATA	0x4a
-#define POLICY_ENABLE_MC	0x52
-#define POLICY_CHANNEL0_ENABLE	0x59
-#define POLICY_CHANNEL1_ENABLE	0x77
-#define POLICY_CHANNEL2_ENABLE	0x95
 
 static u8 minit_context[MINIT_CONTEXT_SIZE] __aligned(16);
 
-static void write_le16(u8 *p, u16 value)
+static u8 read_base_cmos(u8 offset)
 {
-	p[0] = value;
-	p[1] = value >> 8;
+	outb(offset, 0x70);
+	(void)inb(0x61);
+	return inb(0x71);
 }
 
-static void write_le32(u8 *p, u32 value)
+static u8 read_extended_cmos(u8 offset)
 {
-	p[0] = value;
-	p[1] = value >> 8;
-	p[2] = value >> 16;
-	p[3] = value >> 24;
+	outb(offset, 0x72);
+	return inb(0x73);
 }
 
-static void build_minit_policy(u8 policy[MINIT_POLICY_SIZE])
+static void read_minit_cmos_settings(struct x58_minit_cmos_settings *settings)
 {
-	memset(policy, 0, MINIT_POLICY_SIZE);
-
-	/* Exact cold-boot defaults built by AMIBIOS module 55. */
-	policy[POLICY_IOH_BUS] = 0xff;
-	policy[POLICY_BOOT_MODE] = 0;
-	policy[POLICY_MEMORY_RATIO] = 0x10;
-	policy[POLICY_SOCKET_COUNT] = 1;
-	policy[POLICY_QPI_MODE] = 0;
-	policy[POLICY_CHANNEL_COUNT] = 6;
-	policy[POLICY_DIMMS_PER_CHANNEL] = 4;
-	policy[POLICY_RANK_LIMIT] = 2;
-	policy[POLICY_ECC_MODE] = 2;
-	policy[POLICY_BOOT_RESULT] = 0;
-	write_le16(&policy[POLICY_REFRESH_LIMIT], 0x1000);
-	write_le32(&policy[POLICY_MMCONFIG_BASE], CONFIG_ECAM_MMCONF_BASE_ADDRESS);
-	write_le32(&policy[POLICY_FEATURES], 0x01024486);
-
-	/* Two identical timeout/voltage records from BuildAndRunMinit(). */
-	policy[0x2c] = 1;
-	policy[0x2d] = 6;
-	policy[0x2e] = 0x46;
-	policy[0x2f] = 0x14;
-	write_le16(&policy[0x30], 0x05dc);
-	write_le16(&policy[0x32], 0);
-	write_le16(&policy[0x34], 0x0190);
-	policy[0x36] = 0x46;
-	policy[0x37] = 0x14;
-	write_le16(&policy[0x38], 0x05dc);
-	write_le16(&policy[0x3a], 0);
-	write_le16(&policy[0x3c], 0x0190);
-
-	/* A null pointer forces full training rather than saved-state restore. */
-	write_le32(&policy[POLICY_TRAINING_DATA], 0);
-	policy[POLICY_ENABLE_MC] = 1;
-	policy[0x53] = 0;
-	policy[POLICY_CHANNEL0_ENABLE] = 1;
-	policy[POLICY_CHANNEL1_ENABLE] = 1;
-	policy[POLICY_CHANNEL2_ENABLE] = 1;
+	*settings = (struct x58_minit_cmos_settings){ 0 };
+	settings->cmos_8e = read_base_cmos(0x8e);
+	if (!(settings->cmos_8e & 0xc0)) {
+		settings->cmos_58 = read_base_cmos(0x58);
+		if (!(settings->cmos_58 & 1))
+			settings->cmos_58 |= read_base_cmos(0x58) & 2;
+		if (!(settings->cmos_58 & 3)) {
+			settings->extended_80 = read_extended_cmos(0x80);
+			settings->extended_81 = read_extended_cmos(0x81) & 3;
+			settings->extended_82 = read_extended_cmos(0x82);
+			settings->extended_81 |= read_extended_cmos(0x81) & 0x40;
+		}
+	}
+	/* The original wrapper performs these vendor-byte probes before the ratio read. */
+	if (pci_read_config8(PCI_DEV(0xff, 2, 4), 0) == 0xff)
+		(void)pci_read_config8(PCI_DEV(0xfe, 2, 4), 0);
+	settings->extended_8e = read_extended_cmos(0x8e);
 }
 
 enum x58_minit_result x58_validate_trained_memory(void)
@@ -144,23 +105,32 @@ enum x58_minit_result x58_validate_trained_memory(void)
 	return X58_MINIT_SUCCESS;
 }
 
-enum x58_minit_result x58_run_minit(void)
+enum x58_minit_result x58_run_minit(u32 boot_state, u8 *transition)
 {
 	typedef int (*minit_entry_t)(u8 *policy, u8 *context);
-	u8 policy[MINIT_POLICY_SIZE] __aligned(16);
+	u8 policy[X58_MINIT_POLICY_SIZE] __aligned(16);
+	struct x58_minit_cmos_settings settings;
 	u8 *entry;
 	int result;
 
+	*transition = 0;
 	entry = x58_load_vendor_pe(MINIT_CBFS_NAME, MINIT_IMAGE_SIZE);
 	if (!entry)
 		return X58_MINIT_ERROR_IMAGE;
 
-	build_minit_policy(policy);
+	read_minit_cmos_settings(&settings);
+	/* Coreboot has no AMI saved-training record list at 0xffe50000. */
+	if (x58_build_minit_policy(policy, CONFIG_ECAM_MMCONF_BASE_ADDRESS,
+				   boot_state, 0, &settings)) {
+		outb(0x8e, 0x72);
+		outb(0x30, 0x73);
+	}
 	memset(minit_context, 0, sizeof(minit_context));
 	printk(BIOS_INFO, "X58: running MINIT at %p with context %p\n",
 	       entry, minit_context);
 
 	result = ((minit_entry_t)entry)(policy, minit_context);
+	*transition = policy[POLICY_BOOT_RESULT];
 	printk(BIOS_INFO,
 	       "X58: MINIT returned %d, policy status %u, context state %u/%u\n",
 	       result, policy[POLICY_BOOT_RESULT], minit_context[1],

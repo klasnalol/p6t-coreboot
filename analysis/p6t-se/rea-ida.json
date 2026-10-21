@@ -1,0 +1,12 @@
+{
+  "mode": "headless",
+  "command": "/usr/bin/python3",
+  "args": [
+    "/home/klasnalol/coreboot-p6tse/util/p6t_rea_ida_proxy.py",
+    "--",
+    "/home/klasnalol/.codex/plugins/cache/mrexodia/ida-pro-mcp/0.1.0/.venv/bin/idalib-mcp",
+    "--stdio"
+  ],
+  "timeoutMs": 300000,
+  "workspaceRoot": "/home/klasnalol/coreboot-p6tse/build/rea-ida"
+}

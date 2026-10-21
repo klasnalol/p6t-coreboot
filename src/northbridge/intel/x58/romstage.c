@@ -16,6 +16,7 @@
 #include <types.h>
 
 #include "../../../mainboard/asus/p6t_se/beep.h"
+#include "../../../mainboard/asus/p6t_se/csi_recovery.h"
 #include "../../../mainboard/asus/p6t_se/early_init.h"
 #include "csi.h"
 #include "minit_internal.h"
@@ -456,6 +457,8 @@ void mainboard_romstage_entry(void)
 	uintptr_t base;
 	unsigned int populated = 0;
 	unsigned int valid = 0;
+	u32 boot_state;
+	u8 minit_transition;
 
 	post_code(0xe0);
 
@@ -552,16 +555,30 @@ void mainboard_romstage_entry(void)
 	p6t_se_beep(2);
 
 	/* The stock module initializes the CSI/QPI fabric before running MINIT. */
-	csi_result = x58_run_csi(&csi_status);
-	if (csi_result != X58_CSI_SUCCESS) {
+	/* Module 55 reads this state at entry and supplies it to both DLL wrappers. */
+	boot_state = pci_read_config32(PCI_DEV(0, 0x14, 1), 0x80);
+	csi_result = x58_run_csi(&csi_status, boot_state);
+	if (csi_result != X58_CSI_ERROR_IMAGE &&
+	    p6t_se_csi_postcall(csi_status.status_class, csi_status.detail,
+				csi_status.flags)) {
+		asm volatile("cli" ::: "memory");
+		halt();
+	}
+	if (csi_result == X58_CSI_ERROR_IMAGE) {
 		post_code(0xe9);
 		p6t_se_beep_csi_failure(csi_result, csi_status.status_class,
 					csi_status.detail, csi_status.flags,
 					csi_status.progress);
 		die("P6T SE/X58: CSI/QPI initialization failed\n");
 	}
-	/* Three short tones: CSI/QPI completed. */
+	if (csi_result == X58_CSI_ERROR_STATUS)
+		printk(BIOS_WARNING,
+		       "X58: CSI class %u flags %08x; carrying stock transition into MINIT\n",
+		       csi_status.status_class, csi_status.flags);
+	/* Three short tones: CSI returned without its immediate speed reset. */
 	p6t_se_beep(3);
+	/* The stock caller folds wrapper status 3 into state bit 2. */
+	boot_state |= csi_status.status_class == 3 ? 4 : csi_status.status_class;
 
 	/*
 	 * MINIT consumes the DIMM geometry and rank maps through private IMC
@@ -573,7 +590,16 @@ void mainboard_romstage_entry(void)
 		die("P6T SE/X58: IMC topology register verification failed\n");
 	}
 
-	minit_result = x58_run_minit();
+	minit_result = x58_run_minit(boot_state, &minit_transition);
+	if (minit_result != X58_MINIT_ERROR_IMAGE) {
+		boot_state |= minit_transition == 3 ? 4 : minit_transition;
+		/* Stock completion handles reset/stop requests before touching trained RAM. */
+		if (p6t_se_finish_training(boot_state)) {
+			/* The stock stop path disables interrupts before its HLT loop. */
+			asm volatile("cli" ::: "memory");
+			halt();
+		}
+	}
 	if (minit_result != X58_MINIT_SUCCESS) {
 		post_code(0xec);
 		p6t_se_beep_error_detail(P6T_SE_BEEP_ERR_MINIT,

@@ -1,0 +1,495 @@
+{
+  "rom_sha256": "24a3409b4a49e8d4bcf14e2846ec17c8cda1e13d13efe42983e41898e2d17b3f",
+  "directory_offset": 1769450,
+  "directory_version": "0800",
+  "decoder_project": "https://github.com/coreboot/bios_extract",
+  "decoder_commit": "0a7bc1d71735ef97b00dfec0fd54a02fcc5d1bb0",
+  "decoder_library_sha256": "29fcdc95aa18326c484d47b41a0cdcb909ab54df8c2e35123e3a3075f7913832",
+  "records": [
+    {
+      "header_offset": 589844,
+      "id": 17,
+      "flags": 144,
+      "tag": 0,
+      "payload_offset": 589856,
+      "packed_size": 77832,
+      "expanded_size": 77832,
+      "compressed": false,
+      "previous": 667696,
+      "filename": "module_11_00000000_00.bin",
+      "sha256": "1d101389e811ccdf5a1d7484135d3a635545c399b07644671cbef1e7a21270e7",
+      "exact_archive_labels": [
+        "08",
+        "11",
+        "30",
+        "fc",
+        "fd"
+      ]
+    },
+    {
+      "header_offset": 667696,
+      "id": 8,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 667708,
+      "packed_size": 2084,
+      "expanded_size": 2084,
+      "compressed": false,
+      "previous": 669800,
+      "filename": "module_08_00000000_01.bin",
+      "sha256": "d03a4593ba051fb2a7c98829e73fe251310fc65c681602ebaa48e0d3549b521e",
+      "exact_archive_labels": []
+    },
+    {
+      "header_offset": 669800,
+      "id": 253,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 669812,
+      "packed_size": 96,
+      "expanded_size": 96,
+      "compressed": false,
+      "previous": 669924,
+      "filename": "module_fd_00000000_02.bin",
+      "sha256": "2ea9ab9198d1638007400cd2c3bef1cc745b864b76011a0e1bc52180ac6452d4",
+      "exact_archive_labels": []
+    },
+    {
+      "header_offset": 669924,
+      "id": 48,
+      "flags": 144,
+      "tag": 0,
+      "payload_offset": 669936,
+      "packed_size": 72,
+      "expanded_size": 72,
+      "compressed": false,
+      "previous": 670020,
+      "filename": "module_30_00000000_03.bin",
+      "sha256": "21e395e1db41adc0848d6da47d0e6f9629ef2e00c90549c71830c342064d8cbe",
+      "exact_archive_labels": []
+    },
+    {
+      "header_offset": 670020,
+      "id": 252,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 670032,
+      "packed_size": 16,
+      "expanded_size": 16,
+      "compressed": false,
+      "previous": 670056,
+      "filename": "module_fc_00000000_04.bin",
+      "sha256": "5ac6a5945f16500911219129984ba8b387a06f24fe383ce4e81a73294065461b",
+      "exact_archive_labels": []
+    },
+    {
+      "header_offset": 670056,
+      "id": 12,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 670068,
+      "packed_size": 8,
+      "expanded_size": 8,
+      "compressed": false,
+      "previous": 670084,
+      "filename": "module_0c_00000000_05.bin",
+      "sha256": "9fd41058dcb11cd8e6b9a6a6d4479e3f7cd1ac912d189e39b528271daa03b76e",
+      "exact_archive_labels": [
+        "0c"
+      ]
+    },
+    {
+      "header_offset": 670084,
+      "id": 27,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 670104,
+      "packed_size": 214977,
+      "expanded_size": 469977,
+      "compressed": true,
+      "previous": 885084,
+      "filename": "module_1b_00000000_06.bin",
+      "sha256": "6d18d66f10f866d7a5ba9d7f9396d602064c9c319d24b804b3f5264b1a12c042",
+      "exact_archive_labels": [
+        "1b"
+      ]
+    },
+    {
+      "header_offset": 885084,
+      "id": 242,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 885104,
+      "packed_size": 69312,
+      "expanded_size": 70709,
+      "compressed": true,
+      "previous": 954416,
+      "filename": "module_f2_00000000_07.bin",
+      "sha256": "1c0df17e67e73f720a2c4d0aae02404ff4f9be536e16e7b29dbce0868ece1ac3",
+      "exact_archive_labels": [
+        "f2"
+      ]
+    },
+    {
+      "header_offset": 954416,
+      "id": 32,
+      "flags": 0,
+      "tag": 673349766,
+      "payload_offset": 954436,
+      "packed_size": 40478,
+      "expanded_size": 65536,
+      "compressed": true,
+      "previous": 994916,
+      "filename": "module_20_28228086_08.bin",
+      "sha256": "8b89f27f3a1f1d67e664a3fc44b4c6f158af0703cc06b833e87ad36ee7f36bae",
+      "exact_archive_labels": [
+        "20"
+      ]
+    },
+    {
+      "header_offset": 994916,
+      "id": 245,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 994936,
+      "packed_size": 34980,
+      "expanded_size": 64388,
+      "compressed": true,
+      "previous": 1029916,
+      "filename": "module_f5_00000000_09.bin",
+      "sha256": "d22b5b10d907271785f2b6280d9ea52adc1efa12883b205d76c5747d5e6e3e2e",
+      "exact_archive_labels": [
+        "f5"
+      ]
+    },
+    {
+      "header_offset": 1029916,
+      "id": 33,
+      "flags": 0,
+      "tag": 82485,
+      "payload_offset": 1029936,
+      "packed_size": 28974,
+      "expanded_size": 58079,
+      "compressed": true,
+      "previous": 1058912,
+      "filename": "module_21_00014235_10.bin",
+      "sha256": "cc2381e1154634ded28e309742c116e8ea927f202812f1643bf2f30d877a7fe9",
+      "exact_archive_labels": [
+        "21"
+      ]
+    },
+    {
+      "header_offset": 1058912,
+      "id": 33,
+      "flags": 0,
+      "tag": 83778,
+      "payload_offset": 1058932,
+      "packed_size": 28624,
+      "expanded_size": 58112,
+      "compressed": true,
+      "previous": 1087556,
+      "filename": "module_21_00014742_11.bin",
+      "sha256": "2bb6d637025ed91e0b7150c7c8f853309ffcac0280427c31e391bdbb59a7f98f",
+      "exact_archive_labels": [
+        "21 1"
+      ]
+    },
+    {
+      "header_offset": 1087556,
+      "id": 33,
+      "flags": 0,
+      "tag": 84560,
+      "payload_offset": 1087576,
+      "packed_size": 27895,
+      "expanded_size": 62735,
+      "compressed": true,
+      "previous": 1115472,
+      "filename": "module_21_00014a50_12.bin",
+      "sha256": "8a2c92f36c8a8fd87e6644cd7212033e16c137059ea11b26e570a59d283687cd",
+      "exact_archive_labels": [
+        "21 2"
+      ]
+    },
+    {
+      "header_offset": 1115472,
+      "id": 32,
+      "flags": 0,
+      "tag": 2171080940,
+      "payload_offset": 1115492,
+      "packed_size": 24797,
+      "expanded_size": 43008,
+      "compressed": true,
+      "previous": 1140292,
+      "filename": "module_20_816810ec_13.bin",
+      "sha256": "28e33ccc39cd213426c7f35c0351ac757ae4d3d95db005726ed8c5cb435abdb8",
+      "exact_archive_labels": [
+        "20 1"
+      ]
+    },
+    {
+      "header_offset": 1140292,
+      "id": 4,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1140312,
+      "packed_size": 22151,
+      "expanded_size": 35891,
+      "compressed": true,
+      "previous": 1162464,
+      "filename": "module_04_00000000_14.bin",
+      "sha256": "2c8807f7b171d6de447944f0f11014d997d48cfbceae1408aac4bda116a9a565",
+      "exact_archive_labels": [
+        "04"
+      ]
+    },
+    {
+      "header_offset": 1162464,
+      "id": 33,
+      "flags": 0,
+      "tag": 18002,
+      "payload_offset": 1162484,
+      "packed_size": 20975,
+      "expanded_size": 51118,
+      "compressed": true,
+      "previous": 1183460,
+      "filename": "module_21_00004652_15.bin",
+      "sha256": "bb6adbb8f6b48ecb9c5a9941077c2effc8fc184d128fd97d654ba4628ce22400",
+      "exact_archive_labels": [
+        "21 3"
+      ]
+    },
+    {
+      "header_offset": 1183460,
+      "id": 33,
+      "flags": 0,
+      "tag": 17477,
+      "payload_offset": 1183480,
+      "packed_size": 20274,
+      "expanded_size": 47417,
+      "compressed": true,
+      "previous": 1203756,
+      "filename": "module_21_00004445_16.bin",
+      "sha256": "fa8e89ee4cc2eb482473a8e25fb67b5aa26d0e4bdbec1194d246c1995674fef8",
+      "exact_archive_labels": [
+        "21 4"
+      ]
+    },
+    {
+      "header_offset": 1203756,
+      "id": 16,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1203776,
+      "packed_size": 19806,
+      "expanded_size": 50055,
+      "compressed": true,
+      "previous": 1223584,
+      "filename": "module_10_00000000_17.bin",
+      "sha256": "e8a604fa95a515527c8f2bdf88ccf86b3e3fd128a7accfaa2486ff43b006bec4",
+      "exact_archive_labels": [
+        "10"
+      ]
+    },
+    {
+      "header_offset": 1223584,
+      "id": 33,
+      "flags": 0,
+      "tag": 283987,
+      "payload_offset": 1223604,
+      "packed_size": 19282,
+      "expanded_size": 44464,
+      "compressed": true,
+      "previous": 1242888,
+      "filename": "module_21_00045553_18.bin",
+      "sha256": "2e7cfc033210789c1abc236d6af0445e88f8f52cb202d31c4b46a700c226480f",
+      "exact_archive_labels": [
+        "21 5"
+      ]
+    },
+    {
+      "header_offset": 1242888,
+      "id": 32,
+      "flags": 0,
+      "tag": 593697147,
+      "payload_offset": 1242908,
+      "packed_size": 17911,
+      "expanded_size": 32768,
+      "compressed": true,
+      "previous": 1260820,
+      "filename": "module_20_2363197b_19.bin",
+      "sha256": "46e54a57ce9121f22188356915f0268316db0ea6a76183a3b44ad79718a99860",
+      "exact_archive_labels": [
+        "20 2"
+      ]
+    },
+    {
+      "header_offset": 1260820,
+      "id": 14,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1260840,
+      "packed_size": 9962,
+      "expanded_size": 308280,
+      "compressed": true,
+      "previous": 1270804,
+      "filename": "module_0e_00000000_20.bin",
+      "sha256": "368c3318b2418828be41142d37f20db17c2127ca4bd7297c8538354b0217bed9",
+      "exact_archive_labels": [
+        "0e logo"
+      ]
+    },
+    {
+      "header_offset": 1270804,
+      "id": 24,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1270824,
+      "packed_size": 6141,
+      "expanded_size": 16965,
+      "compressed": true,
+      "previous": 1276968,
+      "filename": "module_18_00000000_21.bin",
+      "sha256": "72132e7190714a8a0b860406bbad46ff25f4b77a935a34c26692918830185820",
+      "exact_archive_labels": [
+        "18"
+      ]
+    },
+    {
+      "header_offset": 1276968,
+      "id": 30,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1276988,
+      "packed_size": 2309,
+      "expanded_size": 20428,
+      "compressed": true,
+      "previous": 1279300,
+      "filename": "module_1e_00000000_22.bin",
+      "sha256": "309c35bd9db35eac57f8b295195378f339333bdd4ae6d1364900c39c52deeed9",
+      "exact_archive_labels": [
+        "1e"
+      ]
+    },
+    {
+      "header_offset": 1279300,
+      "id": 25,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1279320,
+      "packed_size": 1436,
+      "expanded_size": 4868,
+      "compressed": true,
+      "previous": 1280756,
+      "filename": "module_19_00000000_23.bin",
+      "sha256": "2add726e9b0e27ec382187582f563cd33f619442fa14c13b59f3c749ddc6431d",
+      "exact_archive_labels": [
+        "19"
+      ]
+    },
+    {
+      "header_offset": 1280756,
+      "id": 26,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1280776,
+      "packed_size": 1330,
+      "expanded_size": 9890,
+      "compressed": true,
+      "previous": 1282108,
+      "filename": "module_1a_00000000_24.bin",
+      "sha256": "1184e70457bebb57824f0a002db41f367f71e7487805745dd427bd83b0177b72",
+      "exact_archive_labels": [
+        "1a smal logo"
+      ]
+    },
+    {
+      "header_offset": 1282108,
+      "id": 6,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1282128,
+      "packed_size": 1249,
+      "expanded_size": 3072,
+      "compressed": true,
+      "previous": 1283380,
+      "filename": "module_06_00000000_25.bin",
+      "sha256": "8f552bbd24361b0bd3c985f890303046341ecb927a0c734ba813cb763a76d508",
+      "exact_archive_labels": [
+        "06 smbios"
+      ]
+    },
+    {
+      "header_offset": 1283380,
+      "id": 43,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1283400,
+      "packed_size": 839,
+      "expanded_size": 1360,
+      "compressed": true,
+      "previous": 1284240,
+      "filename": "module_2b_00000000_26.bin",
+      "sha256": "093e02ff1b0ab46e84157aa535450807e3e2eb565ff550bd863386ace00b6e2c",
+      "exact_archive_labels": [
+        "2b"
+      ]
+    },
+    {
+      "header_offset": 1284240,
+      "id": 250,
+      "flags": 0,
+      "tag": 0,
+      "payload_offset": 1284260,
+      "packed_size": 159,
+      "expanded_size": 65536,
+      "compressed": true,
+      "previous": 1284420,
+      "filename": "module_fa_00000000_27.bin",
+      "sha256": "82fa748daa435964c57a08d76ef2f4764dd8e5b7ac30aefaf8d3557e5cb85273",
+      "exact_archive_labels": [
+        "fa"
+      ]
+    },
+    {
+      "header_offset": 1284420,
+      "id": 128,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 1284432,
+      "packed_size": 168,
+      "expanded_size": 168,
+      "compressed": false,
+      "previous": null,
+      "filename": "module_80_00000000_28.bin",
+      "sha256": "dfc20ee7f5380cde9cc2322b36e8fd5d0d6486048b5ca9d436b7f6f432b555f3",
+      "exact_archive_labels": [
+        "80"
+      ]
+    },
+    {
+      "header_offset": 65568,
+      "id": 85,
+      "flags": 128,
+      "tag": 0,
+      "payload_offset": 65580,
+      "packed_size": 190740,
+      "expanded_size": 190740,
+      "compressed": false,
+      "previous": null,
+      "identical_payload_copies": [
+        65580,
+        1835052
+      ],
+      "filename": "module_55_00000000_29.bin",
+      "sha256": "23d6f3520db4755db3af42c958d6b22c88d7166375c3d7a92ab3c4b4e41b8d64",
+      "exact_archive_labels": [
+        "55"
+      ]
+    }
+  ],
+  "limitations": [
+    "Static directory/decompression evidence, not runtime behavior",
+    "Module IDs are recovered part-header bytes; archive labels are untrusted",
+    "This does not inventory every standalone bootblock/data region"
+  ]
+}

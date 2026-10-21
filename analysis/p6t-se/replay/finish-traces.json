@@ -1,0 +1,630 @@
+{
+  "module_sha256": "23d6f3520db4755db3af42c958d6b22c88d7166375c3d7a92ab3c4b4e41b8d64",
+  "source": "Original instructions 0x12ea..0x135d replayed in Unicorn",
+  "limitations": [
+    "Synthetic state and PCI inputs; no host hardware access",
+    "Reset and memory-controller effects are not modeled"
+  ],
+  "cases": [
+    {
+      "name": "state0_seeded0",
+      "state": 0,
+      "seeded": false,
+      "termination": "returned",
+      "trace": [],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4869,
+        4876,
+        4956,
+        4957
+      ]
+    },
+    {
+      "name": "state0_seeded1",
+      "state": 0,
+      "seeded": true,
+      "termination": "returned",
+      "trace": [],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4869,
+        4876,
+        4956,
+        4957
+      ]
+    },
+    {
+      "name": "state1_seeded0",
+      "state": 1,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4889,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147525324
+        },
+        {
+          "offset": 4892,
+          "operation": "in",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4898,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4906,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147524988
+        },
+        {
+          "offset": 4911,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4919,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147524992
+        },
+        {
+          "offset": 4924,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4927,
+          "operation": "out",
+          "port": 128,
+          "width": 1,
+          "value": 254
+        },
+        {
+          "offset": 4933,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147525324
+        },
+        {
+          "offset": 4936,
+          "operation": "in",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4942,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 1024
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4869,
+        4876,
+        4878,
+        4882,
+        4887,
+        4889,
+        4890,
+        4892,
+        4893,
+        4898,
+        4899,
+        4901,
+        4906,
+        4907,
+        4909,
+        4911,
+        4912,
+        4914,
+        4919,
+        4920,
+        4922,
+        4924,
+        4925,
+        4927,
+        4929,
+        4931,
+        4933,
+        4934,
+        4936,
+        4937,
+        4942,
+        4943,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state1_seeded1",
+      "state": 1,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4889,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147525324
+        },
+        {
+          "offset": 4892,
+          "operation": "in",
+          "port": 3324,
+          "width": 4,
+          "value": 2774181210
+        },
+        {
+          "offset": 4898,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 2774180186
+        },
+        {
+          "offset": 4906,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147524988
+        },
+        {
+          "offset": 4911,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4919,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147524992
+        },
+        {
+          "offset": 4924,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 0
+        },
+        {
+          "offset": 4927,
+          "operation": "out",
+          "port": 128,
+          "width": 1,
+          "value": 254
+        },
+        {
+          "offset": 4933,
+          "operation": "out",
+          "port": 3320,
+          "width": 4,
+          "value": 2147525324
+        },
+        {
+          "offset": 4936,
+          "operation": "in",
+          "port": 3324,
+          "width": 4,
+          "value": 2774180186
+        },
+        {
+          "offset": 4942,
+          "operation": "out",
+          "port": 3324,
+          "width": 4,
+          "value": 2774181210
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4869,
+        4876,
+        4878,
+        4882,
+        4887,
+        4889,
+        4890,
+        4892,
+        4893,
+        4898,
+        4899,
+        4901,
+        4906,
+        4907,
+        4909,
+        4911,
+        4912,
+        4914,
+        4919,
+        4920,
+        4922,
+        4924,
+        4925,
+        4927,
+        4929,
+        4931,
+        4933,
+        4934,
+        4936,
+        4937,
+        4942,
+        4943,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state2_seeded0",
+      "state": 2,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state2_seeded1",
+      "state": 2,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state3_seeded0",
+      "state": 3,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state3_seeded1",
+      "state": 3,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state4_seeded0",
+      "state": 4,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 6
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4945,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state4_seeded1",
+      "state": 4,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 6
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4945,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state5_seeded0",
+      "state": 5,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 6
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4945,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state5_seeded1",
+      "state": 5,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 6
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4860,
+        4867,
+        4945,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state6_seeded0",
+      "state": 6,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state6_seeded1",
+      "state": 6,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state7_seeded0",
+      "state": 7,
+      "seeded": false,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    },
+    {
+      "name": "state7_seeded1",
+      "state": 7,
+      "seeded": true,
+      "termination": "halted",
+      "trace": [
+        {
+          "offset": 4951,
+          "operation": "out",
+          "port": 3321,
+          "width": 1,
+          "value": 14
+        }
+      ],
+      "executed_offsets": [
+        4842,
+        4843,
+        4847,
+        4854,
+        4856,
+        4858,
+        4947,
+        4951,
+        4952,
+        4953
+      ]
+    }
+  ]
+}

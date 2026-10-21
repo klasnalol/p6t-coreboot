@@ -64,7 +64,7 @@ static void read_csi_cmos_settings(struct x58_csi_cmos_settings *settings)
 	settings->extended_82 = read_extended_cmos(0x82);
 }
 
-enum x58_csi_result x58_run_csi(struct x58_csi_status *status)
+enum x58_csi_result x58_run_csi(struct x58_csi_status *status, u32 boot_state)
 {
 	typedef void (*csi_entry_t)(u8 *policy, u8 *mirror);
 	u8 policy[X58_CSI_POLICY_SIZE] __aligned(16);
@@ -79,8 +79,9 @@ enum x58_csi_result x58_run_csi(struct x58_csi_status *status)
 	if (!entry)
 		return X58_CSI_ERROR_IMAGE;
 
-	revision = pci_read_config8(PCI_DEV(0, 0, 0), 0x08) & 0x7f;
+	revision = pci_read_config8(PCI_DEV(0, 0, 0), 0x08);
 	x58_build_csi_policy(policy, revision, CONFIG_ECAM_MMCONF_BASE_ADDRESS);
+	x58_set_csi_boot_state(policy, boot_state);
 	read_csi_cmos_settings(&settings);
 	x58_apply_csi_cmos_policy(policy, revision, cpuid_eax(1) & 0xffff,
 				  &settings);

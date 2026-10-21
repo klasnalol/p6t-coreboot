@@ -1,0 +1,73 @@
+{
+  "images": [
+    {
+      "kind": "seabios",
+      "path": "build/coreboot-p6t-se-seabios-stock-wrappers-20261022.rom",
+      "bytes": 2097152,
+      "sha256": "0c826063889b1c1d5d8970756e14900aa2cb97abe359ee3a73795894860cd134",
+      "verified_config_selection": "CONFIG_PAYLOAD_SEABIOS=y",
+      "config_sha256": "310a1b6ab8a1509d427fab2210510bbf7b1f1a120caea0791be773800124a8aa",
+      "blob_sha256": {
+        "csi.bin": "b0f97e3f8ae49a01bc1d5f91fd0afe2e2dba97965d4d55c6bf94641bacc8e648",
+        "minit.bin": "a17eee641ab0955f6e4848ac95b761ba94c87b2c4be36c3a150d51ee856f0b6c"
+      },
+      "build_romstage_symbols": [
+        "x58_build_csi_policy",
+        "x58_build_minit_policy",
+        "p6t_se_csi_postcall",
+        "p6t_se_finish_training"
+      ]
+    },
+    {
+      "kind": "uefi",
+      "path": "build/coreboot-p6t-se-uefi-stock-wrappers-20261022.rom",
+      "bytes": 2097152,
+      "sha256": "467dfed25a005463fdd5d68d3d7732bd9fdbdf8b494cfa34a4f529d7f9628a78",
+      "verified_config_selection": "CONFIG_PAYLOAD_EDK2=y",
+      "config_sha256": "1015731625b3949a3eb3fef9867f292c25fec916a278927f7373193f266a464a",
+      "blob_sha256": {
+        "csi.bin": "b0f97e3f8ae49a01bc1d5f91fd0afe2e2dba97965d4d55c6bf94641bacc8e648",
+        "minit.bin": "a17eee641ab0955f6e4848ac95b761ba94c87b2c4be36c3a150d51ee856f0b6c"
+      },
+      "build_romstage_symbols": [
+        "x58_build_csi_policy",
+        "x58_build_minit_policy",
+        "p6t_se_csi_postcall",
+        "p6t_se_finish_training"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "src/mainboard/asus/p6t_se/beep.c": "9290eff5d1a90a777a2ab68c05882f2248672b49ab1976dd0691f3495f6892fa",
+    "src/mainboard/asus/p6t_se/beep.h": "8eb750c0430ec08ed437c6180346df1bfcf9539b381592e2d45c750f6488943e",
+    "src/mainboard/asus/p6t_se/csi_recovery.c": "899db7beb295dbfb7f0aef4ccbe511d10d003d0477b455b9f91d68506c5b7620",
+    "src/mainboard/asus/p6t_se/csi_recovery.h": "3be4b54769bafd17991a81311da2731804d505b683bc42dd668ea090f0abe902",
+    "src/mainboard/asus/p6t_se/early_init.c": "6dfec2d3e3af7e0c7360f6eeade31bbd23e82ad0a422b1cc9427926bd6f4de87",
+    "src/mainboard/asus/p6t_se/early_init.h": "e1cf522b832a2fbac450d225555aef2c467e68faa9249fe0e3dd2f43591b9a4d",
+    "src/mainboard/asus/p6t_se/hda_verb.c": "6dc14eae305e7a4534639e1ab8cf9a7d12126d134d779fb64e520b7846ade3e5",
+    "src/mainboard/asus/p6t_se/ramstage.c": "67bc7c33d3469b418dfb35ed30b64384a16e568383c6654edf0910e4a684c286",
+    "src/northbridge/intel/x58/csi.c": "08053a1509ea0026c6c7638b337c1d4a836c8db7738d4f03c79d46f5ed596833",
+    "src/northbridge/intel/x58/csi.h": "416da3f0f8e8ce9162f5345e8542f0fdc1c0af381704abc99ec943463c8e34f1",
+    "src/northbridge/intel/x58/csi_policy.c": "44edbedade1e1738040af4d5ce79397d7a158231668fc65d2398224f180b3ec8",
+    "src/northbridge/intel/x58/csi_policy.h": "67b476a7a880c12206b622159566c70ba308b6d69cb3126819730e2438464332",
+    "src/northbridge/intel/x58/memmap.c": "2e4fb78f327b695e0fcaf38176a4dc8b4a78f78be5d2b99d83b36d7569ecd92b",
+    "src/northbridge/intel/x58/minit.c": "08895b2f04970d5f8b46d1eee9283c3f705bc081f0c0ffe1bf7a43bf74382986",
+    "src/northbridge/intel/x58/minit.h": "c23fdbeef9bb14175fe1d1cb91d8a1fab64b4ecaeded0d0856326c84c2de4c6f",
+    "src/northbridge/intel/x58/minit_internal.c": "4018b5f83fa4a8ee28302140f45cf4f7de8d0776bc895edb5695447ecb87f284",
+    "src/northbridge/intel/x58/minit_internal.h": "9c51845b5a070ccd156307f8061ee0ad110ce25ef7c21aa1b731b44170cc91cf",
+    "src/northbridge/intel/x58/minit_policy.c": "a5bf5ce7477549a1fcff629491fc8a65761c0307f517105a5913636133bbfc62",
+    "src/northbridge/intel/x58/minit_policy.h": "3bc015e8fe401761381b4714072bba6582e0bb342e47eec3152fdffa8acd43f8",
+    "src/northbridge/intel/x58/northbridge.c": "eb6ab025a29bb6e794ce6e961d76aaa09e42ee6fff42176d77d8b6e62a254468",
+    "src/northbridge/intel/x58/pcie.c": "82424e82e31c699f2a094ce2ca4c5600222235a675731cc87fcc26db5b5495ec",
+    "src/northbridge/intel/x58/raminit.c": "24cb112b315380f032516905b5cee95809534760f42ca8574e1cd423fd8847e8",
+    "src/northbridge/intel/x58/raminit.h": "a6aba6bba6d14941e8eacfabca7dc7e1aeac91af56204862f0b5a850507128f1",
+    "src/northbridge/intel/x58/romstage.c": "217dff74036619baf529b837489ba7e84296ef8fd7e9668eee32cb15732d41d5",
+    "src/northbridge/intel/x58/vendor_pe.c": "281d2f00faf26d9e01c7e0f675a68f94f624837cd660535195321a2e96060599",
+    "src/northbridge/intel/x58/vendor_pe.h": "dac783a052d6f4b980a6137a1815a54151f7dd49fbe1b35b415ed3cdf6ac66b3",
+    "src/northbridge/intel/x58/x58.h": "623204b0c1dc094ef7f2a23c450084a92e1fe70c92fde637dcdb61f26b272772"
+  },
+  "validation": "Build, CBFS identity, configuration and linked-symbol checks only",
+  "hardware_boot_verified": false,
+  "video_verified": false,
+  "full_oem_feature_parity": false
+}

@@ -6,6 +6,7 @@ romstage-y += memmap.c
 romstage-y += csi.c
 romstage-y += csi_policy.c
 romstage-y += minit.c
+romstage-y += minit_policy.c
 romstage-y += minit_internal.c
 romstage-y += raminit.c
 romstage-y += romstage.c

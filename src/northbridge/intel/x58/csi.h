@@ -8,6 +8,7 @@
 enum x58_csi_result {
 	X58_CSI_SUCCESS = 0,
 	X58_CSI_ERROR_IMAGE = 1,
+	/* DLL status is handed to the stock wrapper's reset/state handling. */
 	X58_CSI_ERROR_STATUS = 2,
 };
 
@@ -21,6 +22,6 @@ struct x58_csi_status {
 };
 
 /* Initialize the CPU-to-X58 CSI/QPI fabric using the original Intel binary. */
-enum x58_csi_result x58_run_csi(struct x58_csi_status *status);
+enum x58_csi_result x58_run_csi(struct x58_csi_status *status, u32 boot_state);
 
 #endif

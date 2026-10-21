@@ -1,0 +1,77 @@
+{
+  "note": "Descriptive names inferred from verified decompilation and original module55 replay; not recovered vendor symbols.",
+  "functions": [
+    {
+      "addr": "0xfffe7000",
+      "name": "CsiInitDllEntry"
+    },
+    {
+      "addr": "0xfffe72fe",
+      "name": "RecordCsiInitError"
+    },
+    {
+      "addr": "0xfffe737b",
+      "name": "HasFatalCsiInitError"
+    },
+    {
+      "addr": "0xfffe7b18",
+      "name": "FindSlowestCsiPort"
+    },
+    {
+      "addr": "0xfffe7b7e",
+      "name": "CsiSpeedSupportedByAllPorts"
+    },
+    {
+      "addr": "0xfffe7c11",
+      "name": "ReadIohRequestedCsiSpeed"
+    },
+    {
+      "addr": "0xfffe7c58",
+      "name": "ApplyCsiSpeedToAllPorts"
+    },
+    {
+      "addr": "0xfffe7ce5",
+      "name": "NegotiateCsiLinkSpeed"
+    },
+    {
+      "addr": "0xfffe8f91",
+      "name": "ProbeAndInitializeCsiTopology"
+    },
+    {
+      "addr": "0xfffe9125",
+      "name": "DiscoverIohCsiTopology"
+    },
+    {
+      "addr": "0xfffe92be",
+      "name": "ConfigureCsiLinksAndSpeed"
+    },
+    {
+      "addr": "0xfffe94ce",
+      "name": "FinalizeCsiLinkTraining"
+    },
+    {
+      "addr": "0xfffe9db0",
+      "name": "InitializeCsiContext"
+    },
+    {
+      "addr": "0xfffea405",
+      "name": "InitializeCsiFabric"
+    },
+    {
+      "addr": "0xfffeade7",
+      "name": "DiscoverLocalCsiNodes"
+    },
+    {
+      "addr": "0xfffeb04b",
+      "name": "RunCsiPreInitialization"
+    },
+    {
+      "addr": "0xfffec6a7",
+      "name": "SetCsiProgressPhase"
+    },
+    {
+      "addr": "0xfffec753",
+      "name": "WriteCsiPostCode"
+    }
+  ]
+}

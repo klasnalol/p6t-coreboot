@@ -31,7 +31,7 @@ static void write_le32(u8 *p, u32 value)
 	p[3] = value >> 24;
 }
 
-static void build_csi_port_policy(u8 *port, u8 route_value, u8 revision_flag)
+static void build_csi_port_policy(u8 *port, u8 route_value)
 {
 	port[0] = 1;
 	write_le32(&port[1], route_value);
@@ -43,25 +43,18 @@ static void build_csi_port_policy(u8 *port, u8 route_value, u8 revision_flag)
 	port[10] = 8;
 	port[11] = 1;
 	port[12] = 1;
-	/* BuildAndRunCsiInit writes CL to all ten trailing bytes. */
-	for (unsigned int i = 13; i < 23; i++)
-		port[i] = revision_flag;
+	/* The stock revision loop has decremented CL to zero before the tail writes. */
 }
 
 void x58_build_csi_policy(u8 policy[X58_CSI_POLICY_SIZE], u8 revision,
 			  u32 mmconfig_base)
 {
-	/* CL is zero after REP STOSD, then set to one for IOH rev >= 0x10. */
-	const u8 revision_flag = revision >= 0x10;
-
 	memset(policy, 0, X58_CSI_POLICY_SIZE);
 	write_le32(&policy[0], mmconfig_base);
 	/* Module 55 supplies the same base again in the DLL's tail context. */
 	write_le32(&policy[CSI_MMCONFIG_MIRROR], mmconfig_base);
 	policy[4] = 0xff;
 	policy[6] = 1;
-	policy[8] = revision_flag;
-	policy[0x0a] = revision_flag;
 	policy[0x0e] = 1;
 	policy[0x0f] = 2;
 
@@ -75,20 +68,24 @@ void x58_build_csi_policy(u8 policy[X58_CSI_POLICY_SIZE], u8 revision,
 		group[8] = 1;
 		group[9] = 1;
 		if (csi_groups[i].extended) {
-			group[12] = revision_flag;
 			group[13] = 7;
 			group[14] = 7;
 		}
 
 		for (unsigned int port = 0; port < 3; port++)
 			build_csi_port_policy(&group[0x0f + port * 0x17],
-					      csi_groups[i].route_value, revision_flag);
+					      csi_groups[i].route_value);
 	}
 
 	if (revision >= 0x10)
 		policy[0x226] = 1;
 	else
 		policy[8] = 1;
+}
+
+void x58_set_csi_boot_state(u8 policy[X58_CSI_POLICY_SIZE], u8 state)
+{
+	policy[0x0b] = state;
 }
 
 void x58_apply_csi_cmos_policy(u8 policy[X58_CSI_POLICY_SIZE], u8 revision,
@@ -122,13 +119,6 @@ void x58_apply_csi_cmos_policy(u8 policy[X58_CSI_POLICY_SIZE], u8 revision,
 
 	if (cpu_signature == 0x6a0)
 		policy[6] = 0;
-	/*
-	 * The stock CMOS speed request can disagree with the IOH's requested
-	 * CSI/QPI speed. The vendor DLL treats 0x20 as auto and then selects
-	 * the IOH-supported speed, avoiding its fatal speed-mismatch path.
-	 */
-	if (policy[6] && policy[7] >= 1 && policy[7] <= 3)
-		policy[7] = X58_CSI_SPEED_AUTO;
 	if (revision < 0x10 && !policy[7])
 		policy[7] = 1;
 }

@@ -109,8 +109,9 @@ bool x58_raminit_select_common_params(struct x58_raminit_state *ctrl)
 		return false;
 
 	/*
-	 * Start native bring-up at DDR3-800. Faster bins remain disabled until
-	 * training has been validated on hardware.
+	 * Check whether the DIMMs share a conservative DDR3-800 timing set.
+	 * This is an SPD preflight check; the vendor MINIT policy controls the
+	 * trained clock and timings independently.
 	 */
 	if (ctrl->tck > TCK_400MHZ) {
 		printk(BIOS_ERR, "X58: a DIMM cannot run at the DDR3-800 safe bin\n");
@@ -170,7 +171,7 @@ bool x58_raminit_program_topology(const struct x58_raminit_state *ctrl)
 void x58_raminit_report(const struct x58_raminit_state *ctrl)
 {
 	printk(BIOS_INFO,
-	       "X58: %u MiB, DDR3-800 CL%u, tRCD=%u tRP=%u tRAS=%u tRFC=%u\n",
+	       "X58: %u MiB, SPD preflight DDR3-800 CL%u, tRCD=%u tRP=%u tRAS=%u tRFC=%u\n",
 	       ctrl->total_mb, ctrl->cas, timing_cycles(ctrl->trcd, ctrl->tck),
 	       timing_cycles(ctrl->trp, ctrl->tck),
 	       timing_cycles(ctrl->tras, ctrl->tck),
