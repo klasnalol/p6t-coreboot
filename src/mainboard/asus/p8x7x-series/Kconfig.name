@@ -3,6 +3,9 @@
 config BOARD_ASUS_P8C_WS
 	bool "P8C_WS"
 
+config BOARD_ASUS_P9X79
+	bool "P9X79"
+
 config BOARD_ASUS_P8H77_V
 	bool "P8H77-V"
 

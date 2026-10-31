@@ -51,6 +51,7 @@ P2B-LS <asus/p2b-ls.md>
 P3B-F <asus/p3b-f.md>
 P5Q <asus/p5q.md>
 P8C WS <asus/p8c_ws.md>
+P9X79 <asus/p9x79.md>
 P8H61-M LX <asus/p8h61-m_lx.md>
 P8H61-M Pro <asus/p8h61-m_pro.md>
 P8H77-V <asus/p8h77-v.md>

@@ -562,6 +562,7 @@ static struct device_operations cpu_dev_ops = {
 static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x206a0, CPUID_ALL_STEPPINGS_MASK }, /* Intel Sandybridge */
 	{ X86_VENDOR_INTEL, 0x306a0, CPUID_ALL_STEPPINGS_MASK }, /* Intel IvyBridge */
+	{ X86_VENDOR_INTEL, 0x306e0, CPUID_ALL_STEPPINGS_MASK }, /* Intel IvyBridge-E (LGA2011) */
 	CPU_TABLE_END
 };
 

@@ -13,6 +13,7 @@ smm-y += finalize.c
 
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-2a-*)
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-3a-*)
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-3e-*)
 
 bootblock-y += bootblock.c
 bootblock-y += ../car/non-evict/cache_as_ram.S

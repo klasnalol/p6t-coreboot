@@ -1,0 +1,114 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# ASUS P9X79 — X79 (C602) PCH, LGA2011, Sandy/Ivy Bridge-E.
+#
+# PCIe: peg10 (01.0) is enabled in the base devicetree; this adds peg11
+# (01.1) and peg60 (06.0) for the remaining x16 slots, mirroring p8c_ws.
+# The C602 PCIe RPs (10.0 x4, 10.1-10.3 x1) feed the PCH slots but the
+# bd82x6x RP code assumes the C216 1c.x layout, so they stay off for now.
+#
+# DRAM: the CPU IMC is 4-channel DDR3 (one slot per channel). The in-tree
+# native raminit only trains 2 channels and caps at DDR3-1066, so memory
+# boots degraded until a 4-channel MRC path (IvtQpiandMrcInit) lands.
+# See Documentation/mainboard/asus/p9x79.md.
+
+chip northbridge/intel/sandybridge
+	# Highest speed the native (2-channel) raminit can train
+	register "max_mem_clock_mhz" = "1066"
+	device domain 0 on
+		device ref peg11 on  end	# PCIEX16_2 (electrical x16)
+		device ref peg60 on  end	# PCIEX16_3 (electrical x16)
+		subsystemid 0x1043 0x84f8 inherit
+		chip southbridge/intel/bd82x6x
+			# Starting point copied from p8c_ws (same SIO/USB count);
+			# OC pin groups need verification against the AMI autoport.
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 1 },
+				{ 1, 0, 1 },
+				{ 1, 0, 2 },
+				{ 1, 0, 2 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 4 },
+				{ 1, 0, 4 },
+				{ 1, 0, 6 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 6 }
+			}"
+			device ref pci_bridge on  end
+			device ref lpc on
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0   off end # Floppy
+					device pnp 2e.1   on      # Parallel
+						io  0x60 = 0x0378
+						irq 0x70 = 5
+						drq 0x74 = 4      # No DMA
+						irq 0xf0 = 0x3c   # Printer mode
+					end
+					device pnp 2e.2   on      # UART A
+						io  0x60 = 0x03f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3   off end # UART B, IR
+					device pnp 2e.5   on      # PS/2 KBC
+						io  0x60 = 0x0060
+						io 0x62 = 0x0064
+						irq 0x70 = 1      # Keyboard
+						irq 0x72 = 12     # Mouse
+					end
+					device pnp 2e.6   off end # CIR
+					device pnp 2e.7   off end # GPIO8
+					device pnp 2e.107 off end # GPIO9
+					device pnp 2e.8   off end # WDT
+					device pnp 2e.108 off end # GPIO0
+					device pnp 2e.208 off end # GPIOA
+					device pnp 2e.308 off end # GPIO base
+					device pnp 2e.109 off 	  # GPIO1
+						irq 0xf0 = 0xfb
+						irq 0xf1 = 0x0
+						irq 0xf5 = 0xff
+						irq 0xf7 = 0xff
+					end
+					device pnp 2e.209 on      # GPIO2
+						irq 0xe0 = 0xef
+					end
+					device pnp 2e.309 on      # GPIO3
+						irq 0xea = 0xff
+					end
+					device pnp 2e.409 on  end # GPIO4
+					device pnp 2e.509 on  end # GPIO5
+					device pnp 2e.609 on  end # GPIO6
+					device pnp 2e.709 off end # GPIO7
+					device pnp 2e.a   on      # ACPI
+						irq 0xe6 = 0x0c
+						irq 0xe7 = 0x11
+						irq 0xf2 = 0x5d
+					end
+					device pnp 2e.b   on      # HWM, LED
+						# Stock ROM (SIOBasicIOPei) programs the NCT6776F
+						# hardware-monitor register space through the
+						# 0x295(index)/0x296(data) window: bank reg 0x4E,
+						# bank7/0x09 (logical 0x709, NCT6776 PECI0/CPU crit
+						# temp = Tjmax-10) and bank4/0x23-0x28 (fan/thermal).
+						# So this board's HWMON LD base is 0x295, not the
+						# 0x290 default used by other nct6776 boards.
+						io  0x60 = 0x0295
+						io  0x62 = 0x0000
+					end
+					device pnp 2e.d   off end # VID
+					device pnp 2e.e   off end # CIR wake-up
+					device pnp 2e.f   off     # GPIO PP/OD
+						# Enable i2c slave to 0x1d
+						irq 0xf0 = 0x9d
+					end
+					device pnp 2e.14  off end # SVID
+					device pnp 2e.16  off end # Deep sleep
+					device pnp 2e.17  off end # GPIOA
+				end
+			end
+		end
+	end
+end
